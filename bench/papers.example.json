@@ -1,0 +1,8 @@
+[
+  {"input": "demo:leakage",    "expected": "discrepancy_found", "note": "synthetic: selection leakage"},
+  {"input": "demo:reproduces", "expected": "reproduced",        "note": "synthetic: clean"},
+  {"input": "demo:broken",     "expected": "inconclusive",      "note": "synthetic: proprietary data"},
+
+  {"input": "https://arxiv.org/abs/REPLACE_WITH_PAPER_WITH_PUBLIC_ERRATUM", "expected": "discrepancy_found", "note": "real paper with a documented erratum / failed replication: cite the source"},
+  {"input": "https://arxiv.org/abs/REPLACE_WITH_SMALL_PAPER_THAT_REPRODUCES", "expected": "reproduced", "note": "real, small-compute paper with a public repo and a confirmed replication"}
+]

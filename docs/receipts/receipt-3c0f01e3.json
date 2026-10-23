@@ -1,0 +1,297 @@
+{
+  "version": 1,
+  "receipt_id": "3c0f01e3",
+  "created_at": "2026-10-23T22:49:42+00:00",
+  "synthetic_demo": true,
+  "input": "demo:reproduces",
+  "paper": {
+    "title": "Standardised logistic regression on handwritten digits: 96.9% CV accuracy",
+    "arxiv_id": null,
+    "url": null,
+    "abstract": "Synthetic example that reproduces cleanly, to show the agent does not flag everything."
+  },
+  "claim": {
+    "id": "c1",
+    "statement": "Standardised logistic regression reaches 96.9% 5-fold CV accuracy on digits.",
+    "metric": "5-fold CV accuracy (%)",
+    "value": 96.9,
+    "unit": "%",
+    "dataset": "scikit-learn digits",
+    "higher_is_better": true,
+    "where": "Table 1"
+  },
+  "claims_all": [
+    {
+      "id": "c1",
+      "statement": "Standardised logistic regression reaches 96.9% 5-fold CV accuracy on digits.",
+      "metric": "5-fold CV accuracy (%)",
+      "value": 96.9,
+      "unit": "%",
+      "dataset": "scikit-learn digits",
+      "higher_is_better": true,
+      "where": "Table 1"
+    }
+  ],
+  "repo": {
+    "url": null,
+    "commit": null
+  },
+  "evidence": [],
+  "script": {
+    "code": "\"\"\"Reproduction of: \"Standardised logistic regression reaches 96.9% 5-fold CV accuracy on\nhandwritten digits\" (synthetic example, scikit-learn digits).\"\"\"\nimport json, os\nimport numpy as np\nfrom sklearn.datasets import load_digits\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.preprocessing import StandardScaler\n\nseed = int(os.environ.get(\"SEED\", \"0\"))\nX, y = load_digits(return_X_y=True)\ncv = StratifiedKFold(5, shuffle=True, random_state=seed)\npipe = make_pipeline(StandardScaler(), LogisticRegression(max_iter=5000))\nacc = float(np.mean(cross_val_score(pipe, X, y, cv=cv))) * 100\nprint(f\"seed={seed} 5-fold CV accuracy = {acc:.2f}\")\nprint(\"RECEIPTS_RESULT \" + json.dumps({\"metric\": \"5-fold CV accuracy (%)\", \"value\": round(acc, 3), \"extras\": {}}))\n",
+    "requirements": [
+      "numpy",
+      "scikit-learn"
+    ],
+    "sha256": "daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216"
+  },
+  "seeds_requested": 8,
+  "runs": [
+    {
+      "seed": 0,
+      "ok": true,
+      "value": 96.94,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {},
+      "seconds": 3.376732587814331,
+      "job_id": "receipts-3c0f01e3-s0-95776440",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216",
+        "seed": 0,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.77,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "The job completed successfully. The 5\u2011fold cross\u2011validation accuracy was 96.94\u202f%. No failure occurred, so there is no root cause to report.",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216\", \"seed\": 0}\nRECEIPTS_META {\"network_isolated\": false}\nseed=0 5-fold CV accuracy = 96.94\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 96.94, \"extras\": {}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.77}\n"
+    },
+    {
+      "seed": 1,
+      "ok": true,
+      "value": 96.494,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {},
+      "seconds": 3.382079601287842,
+      "job_id": "receipts-3c0f01e3-s1-95776440",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216",
+        "seed": 1,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.77,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216\", \"seed\": 1}\nRECEIPTS_META {\"network_isolated\": false}\nseed=1 5-fold CV accuracy = 96.49\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 96.494, \"extras\": {}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.77}\n"
+    },
+    {
+      "seed": 2,
+      "ok": true,
+      "value": 96.938,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {},
+      "seconds": 3.254626989364624,
+      "job_id": "receipts-3c0f01e3-s2-95776441",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216",
+        "seed": 2,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.67,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216\", \"seed\": 2}\nRECEIPTS_META {\"network_isolated\": false}\nseed=2 5-fold CV accuracy = 96.94\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 96.938, \"extras\": {}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.67}\n"
+    },
+    {
+      "seed": 3,
+      "ok": true,
+      "value": 97.217,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {},
+      "seconds": 2.9265708923339844,
+      "job_id": "receipts-3c0f01e3-s3-95776441",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216",
+        "seed": 3,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.62,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216\", \"seed\": 3}\nRECEIPTS_META {\"network_isolated\": false}\nseed=3 5-fold CV accuracy = 97.22\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 97.217, \"extras\": {}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.62}\n"
+    },
+    {
+      "seed": 4,
+      "ok": true,
+      "value": 96.829,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {},
+      "seconds": 3.0315263271331787,
+      "job_id": "receipts-3c0f01e3-s4-95776441",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216",
+        "seed": 4,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.62,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216\", \"seed\": 4}\nRECEIPTS_META {\"network_isolated\": false}\nseed=4 5-fold CV accuracy = 96.83\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 96.829, \"extras\": {}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.62}\n"
+    },
+    {
+      "seed": 5,
+      "ok": true,
+      "value": 96.773,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {},
+      "seconds": 2.73744797706604,
+      "job_id": "receipts-3c0f01e3-s5-95776441",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216",
+        "seed": 5,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.62,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216\", \"seed\": 5}\nRECEIPTS_META {\"network_isolated\": false}\nseed=5 5-fold CV accuracy = 96.77\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 96.773, \"extras\": {}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.62}\n"
+    },
+    {
+      "seed": 6,
+      "ok": true,
+      "value": 97.051,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {},
+      "seconds": 3.097330093383789,
+      "job_id": "receipts-3c0f01e3-s6-95776442",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216",
+        "seed": 6,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.67,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216\", \"seed\": 6}\nRECEIPTS_META {\"network_isolated\": false}\nseed=6 5-fold CV accuracy = 97.05\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 97.051, \"extras\": {}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.67}\n"
+    },
+    {
+      "seed": 7,
+      "ok": true,
+      "value": 96.606,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {},
+      "seconds": 3.305521249771118,
+      "job_id": "receipts-3c0f01e3-s7-95776442",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216",
+        "seed": 7,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.72,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216\", \"seed\": 7}\nRECEIPTS_META {\"network_isolated\": false}\nseed=7 5-fold CV accuracy = 96.61\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 96.606, \"extras\": {}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.72}\n"
+    }
+  ],
+  "verdict": {
+    "verdict": "reproduced",
+    "claimed": 96.9,
+    "stats": {
+      "n": 8,
+      "mean": 96.856,
+      "std": 0.23399877899559457,
+      "min": 96.494,
+      "max": 97.217,
+      "ci95": [
+        96.6603410390592,
+        97.05165896094078
+      ]
+    },
+    "tolerance": 1.0,
+    "allowed_gap": 1.0,
+    "partial_gap": 3.0,
+    "shortfall": 0.04400000000001114,
+    "claimed_in_range": true,
+    "reason": "",
+    "higher_is_better": true
+  },
+  "diagnosis": null,
+  "infra": {
+    "backend": "docker",
+    "image": "talhaarif7/receipts-sandbox:latest",
+    "platform": "docker-local",
+    "job_seconds": 25.111835718154907,
+    "wall_seconds": 6.117284059524536,
+    "est_cost_usd": 0,
+    "models": {
+      "nano": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+      "super": "nvidia/nemotron-3-super-120b-a12b",
+      "ultra": "nvidia/Nemotron-3-Ultra-550b-a55b"
+    },
+    "llm_usage": {
+      "nano": {
+        "calls": 1,
+        "prompt_tokens": 244,
+        "completion_tokens": 92
+      },
+      "super": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0
+      },
+      "ultra": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0
+      }
+    }
+  },
+  "sha256": "247d3e47c1940ff47a7d133829e6dbf80b73423f9568317b02bddeeefa16603e"
+}

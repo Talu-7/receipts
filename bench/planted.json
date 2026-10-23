@@ -1,0 +1,18 @@
+[
+  {"input": "demo:leakage",     "expected": "discrepancy_found",    "expected_cause": ["data_leakage"],
+   "note": "planted: feature selection fit before cross-validation"},
+  {"input": "demo:testtune",    "expected": "discrepancy_found",    "expected_cause": ["data_leakage", "hyperparameter_mismatch"],
+   "note": "planted: hyperparameter chosen on the test set"},
+  {"input": "demo:trainmetric", "expected": "discrepancy_found",    "expected_cause": ["metric_definition_difference", "data_leakage"],
+   "note": "planted: training-set accuracy reported as test accuracy"},
+  {"input": "demo:dupes",       "expected": "discrepancy_found",    "expected_cause": ["data_leakage"],
+   "note": "planted: duplicate rows across train/test"},
+  {"input": "demo:partial",     "expected": "partially_reproduced",
+   "note": "planted: mildly overstated number (about 1.5 points)"},
+  {"input": "demo:reproduces",  "expected": "reproduced",
+   "note": "negative control"},
+  {"input": "demo:svm",         "expected": "reproduced",
+   "note": "negative control"},
+  {"input": "demo:broken",      "expected": "inconclusive",         "expected_cause": ["data_unavailable"],
+   "note": "proprietary data: must say inconclusive, not accuse"}
+]

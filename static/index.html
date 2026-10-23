@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Receipts</title>
+<style>
+  :root{--bg:#0b0f17;--panel:#111827;--line:#1f2937;--text:#e5e7eb;--muted:#9ca3af;--accent:#76b900;
+        --green:#1f9d55;--amber:#d9a400;--red:#d6336c;--grey:#6b7280;--blue:#3b82f6}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+  main{max-width:960px;margin:0 auto;padding:28px 16px 90px}
+  header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  h1{margin:0;font-size:28px;letter-spacing:-.02em}
+  h1 span{color:var(--accent)}
+  .tag{color:var(--muted)}
+  .pills{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .pill{font-size:12px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+  .pill.on{color:#bef264;border-color:#3f6212}
+  form{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 10px}
+  input[type=text]{flex:1 1 360px;background:var(--panel);border:1px solid var(--line);color:var(--text);padding:12px 14px;border-radius:10px;font:inherit}
+  select{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:12px;border-radius:10px;font:inherit}
+  button{background:var(--accent);color:#0b0f17;border:0;border-radius:10px;padding:12px 20px;font-weight:700;font:inherit;font-weight:700;cursor:pointer}
+  button:disabled{opacity:.5;cursor:wait}
+  .demos{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin:6px 0 22px}
+  .demo{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;color:var(--text);font-weight:400}
+  .demo:hover{border-color:var(--accent)}
+  .demo b{display:block;font-size:14px;margin-bottom:2px}
+  .demo small{color:var(--muted)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:14px 0}
+  .stages{display:grid;gap:6px}
+  .stage{display:flex;gap:10px;align-items:baseline;color:var(--muted)}
+  .stage .dot{width:10px;height:10px;border-radius:50%;background:var(--line);flex:none;transform:translateY(1px)}
+  .stage.start .dot{background:var(--blue);animation:pulse 1s infinite}
+  .stage.done .dot{background:var(--green)}
+  .stage.warn .dot{background:var(--amber)}
+  .stage.error .dot{background:var(--red)}
+  .stage.done,.stage.start{color:var(--text)}
+  .stage .name{width:84px;flex:none;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  @keyframes pulse{50%{opacity:.35}}
+  .seeds{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .chip{font:12.5px ui-monospace,monospace;padding:4px 8px;border-radius:8px;background:#0b1220;border:1px solid var(--line);color:var(--muted)}
+  .chip.run{border-color:var(--blue);animation:pulse 1s infinite}
+  .chip.ok{color:var(--text);border-color:#2b6a46}
+  .chip.bad{color:#fca5a5;border-color:#7f1d1d}
+  .banner{border-radius:14px;padding:20px 22px;margin:14px 0;border:1px solid}
+  .banner .v{font-size:30px;font-weight:800;letter-spacing:.01em}
+  .banner .cmp{font-size:17px;margin-top:4px}
+  .muted{color:var(--muted)}
+  .links a{color:#93c5fd;margin-right:16px}
+  h3{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+  .synthetic{background:#78350f;color:#fde68a;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;margin-top:10px}
+  ul{margin:6px 0 0;padding-left:20px}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Re<span>ceipts</span></h1>
+    <span class="tag">Does the headline result actually reproduce?</span>
+    <div class="pills" id="pills"></div>
+  </header>
+
+  <form id="f">
+    <input type="text" id="input" placeholder="arXiv link or id (e.g. https://arxiv.org/abs/XXXX.XXXXX) or demo:leakage" autocomplete="off">
+    <select id="seeds" title="seeds run in parallel"><option>4</option><option selected>8</option><option>12</option><option>16</option></select>
+    <select id="runner"><option value="local">local (no container)</option><option value="docker">local Docker sandbox</option><option value="nebius">Nebius Serverless Jobs</option></select>
+    <button id="go" type="submit">Check it</button>
+  </form>
+  <div class="demos" id="demos"></div>
+
+  <div id="out" hidden>
+    <div class="card"><div class="stages" id="stages"></div><div class="seeds" id="seedchips"></div></div>
+    <div id="verdict"></div>
+  </div>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const STAGES = [["ingest","Read paper"],["claims","Claims"],["discover","Repo + evidence"],["codegen","Write code"],
+                ["run","Run seeds"],["analyze","Verdict"],["summarize","Summarise"],["diagnose","Diagnose"],["receipt","Receipt"]];
+const LABEL = {reproduced:["REPRODUCED","var(--green)"],partially_reproduced:["PARTIALLY REPRODUCED","var(--amber)"],
+               discrepancy_found:["DISCREPANCY FOUND","var(--red)"],inconclusive:["INCONCLUSIVE","var(--grey)"]};
+let es = null;
+
+function el(tag, props = {}, ...kids){
+  const e = document.createElement(tag);
+  Object.assign(e, props);
+  for (const k of kids) e.append(k);
+  return e;
+}
+
+async function init(){
+  const cfg = await (await fetch("/api/config")).json();
+  const pills = $("#pills");
+  for (const [k,on] of [["Nemotron",cfg.llm],["Tavily",cfg.tavily],["Nebius CLI",cfg.nebius_cli]])
+    pills.append(el("span",{className:"pill"+(on?" on":""),textContent:k+(on?"":" off")}));
+  $("#runner").value = cfg.default_runner;
+  const cases = await (await fetch("/api/cases")).json();
+  for (const c of cases){
+    const b = el("button",{className:"demo",type:"button"}, el("b",{textContent:c.title}), el("small",{textContent:c.blurb}));
+    b.onclick = () => { $("#input").value = c.input; start(); };
+    $("#demos").append(b);
+  }
+}
+
+function resetStages(){
+  const box = $("#stages"); box.replaceChildren();
+  for (const [id,name] of STAGES)
+    box.append(el("div",{className:"stage",id:"st-"+id}, el("span",{className:"dot"}), el("span",{className:"name",textContent:name}), el("span",{className:"msg"})));
+  $("#seedchips").replaceChildren(); $("#verdict").replaceChildren();
+}
+
+function setStage(stage, status, msg){
+  const row = $("#st-"+stage); if (!row) return;
+  row.className = "stage " + status;
+  if (msg) row.querySelector(".msg").textContent = msg;
+}
+
+function chip(seed){
+  let c = $("#seed-"+seed);
+  if (!c){ c = el("span",{id:"seed-"+seed,className:"chip"}); $("#seedchips").append(c); }
+  return c;
+}
+
+function handle(e){
+  const {stage,status,msg,data} = e;
+  if (stage === "error"){ setStage("ingest","error",msg); return; }
+  if (stage === "run" && data && data.seed !== undefined){
+    const c = chip(data.seed);
+    if (status === "start"){ c.className = "chip run"; c.textContent = "seed "+data.seed+" …"; }
+    else { c.className = "chip " + (data.ok ? "ok":"bad"); c.textContent = "seed "+data.seed+": "+(data.ok ? data.value.toFixed(2) : "failed"); }
+    return;
+  }
+  const s = (status === "start") ? "start" : (status === "warn" ? "warn" : (status === "error" ? "error" : "done"));
+  setStage(stage, s, msg);
+  if (stage === "receipt") showReceipt(data);
+}
+
+function gauge(claimed, st){
+  const W = 720, lo0 = Math.min(claimed, st.min), hi0 = Math.max(claimed, st.max);
+  const pad = Math.max((hi0-lo0)*.25, 1), lo = lo0-pad, hi = hi0+pad;
+  const x = v => 20 + (v-lo)/(hi-lo)*(W-40);
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns,"svg"); svg.setAttribute("viewBox","0 0 "+W+" 96"); svg.style.width="100%";
+  const add = (tag, attrs, text) => { const n = document.createElementNS(ns,tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (text) n.textContent = text; svg.append(n); };
+  add("line",{x1:20,y1:58,x2:W-20,y2:58,stroke:"#4b5563","stroke-width":2});
+  add("rect",{x:x(st.min),y:44,width:Math.max(x(st.max)-x(st.min),3),height:28,rx:4,fill:"#3b82f6",opacity:.35});
+  if (st.ci95) add("rect",{x:x(st.ci95[0]),y:49,width:Math.max(x(st.ci95[1])-x(st.ci95[0]),3),height:18,rx:3,fill:"#3b82f6",opacity:.85});
+  add("line",{x1:x(st.mean),y1:40,x2:x(st.mean),y2:76,stroke:"#fff","stroke-width":3});
+  add("text",{x:x(st.mean),y:92,fill:"#e5e7eb","font-size":13,"text-anchor":"middle"},"reproduced mean "+st.mean.toFixed(1));
+  add("line",{x1:x(claimed),y1:16,x2:x(claimed),y2:76,stroke:"#f43f5e","stroke-width":3,"stroke-dasharray":"5 3"});
+  add("text",{x:x(claimed),y:12,fill:"#fda4af","font-size":13,"text-anchor":"middle"},"claimed "+claimed.toFixed(1));
+  return svg;
+}
+
+function showReceipt(d){
+  const r = d.receipt, v = r.verdict, st = v.stats, [label,color] = LABEL[v.verdict] || [v.verdict,"var(--grey)"];
+  const box = $("#verdict"); box.replaceChildren();
+  const banner = el("div",{className:"banner"});
+  banner.style.background = "color-mix(in srgb, "+color+" 14%, transparent)"; banner.style.borderColor = color;
+  const vv = el("div",{className:"v",textContent:label}); vv.style.color = color;
+  banner.append(vv);
+  const cmp = st.n
+    ? "claimed "+r.claim.value.toFixed(2)+"  vs  reproduced "+st.mean.toFixed(2)+" ± "+st.std.toFixed(2)+"  ("+st.n+" of "+r.seeds_requested+" runs, range "+st.min.toFixed(2)+"–"+st.max.toFixed(2)+")"
+    : "no run produced a number";
+  banner.append(el("div",{className:"cmp",textContent:cmp}));
+  if (v.reason) banner.append(el("div",{className:"muted",textContent:v.reason}));
+  if (st.n) banner.append(gauge(r.claim.value, st));
+  if (r.synthetic_demo) banner.append(el("div",{className:"synthetic",textContent:"Synthetic demo case: a bundled example, not a real paper."}));
+  box.append(banner);
+
+  const claim = el("div",{className:"card"}, el("h3",{textContent:"Claim under test"}), el("div",{textContent:r.claim.statement}),
+                   el("div",{className:"muted",textContent:[r.claim.metric,r.claim.dataset,r.claim.where].filter(Boolean).join(" · ")}));
+  box.append(claim);
+
+  if (r.diagnosis){
+    const dg = r.diagnosis;
+    const c = el("div",{className:"card"}, el("h3",{textContent: v.verdict === "inconclusive" ? "Why this is inconclusive" : "Why it differs"}),
+      el("div",{}, el("b",{textContent:dg.category.replaceAll("_"," ")}), el("span",{className:"muted",textContent:"  confidence "+dg.confidence+" · "+dg.source})),
+      el("p",{textContent:dg.explanation}));
+    if (dg.evidence && dg.evidence.length){ const ul = el("ul"); for (const b of dg.evidence) ul.append(el("li",{textContent:String(b)})); c.append(ul); }
+    if (dg.suggested_check) c.append(el("div",{className:"muted",textContent:"Suggested check: "+dg.suggested_check}));
+    box.append(c);
+  }
+  if (!r.synthetic_demo){
+    const ul = el("ul");
+    for (const e of (r.evidence || [])){
+      const li = el("li");
+      li.append(el("b",{textContent:e.kind+": "}), el("a",{href:e.url,target:"_blank",rel:"noopener",textContent:e.title||e.url,style:"color:#93c5fd"}));
+      if (e.why) li.append(el("span",{className:"muted",textContent:"  " + e.why}));
+      ul.append(li);
+    }
+    if (!(r.evidence || []).length) ul.append(el("li",{className:"muted",textContent:"No errata or replication reports found for this paper."}));
+    box.append(el("div",{className:"card"}, el("h3",{textContent:"Evidence found by Tavily (filtered by Nemotron Nano)"}), ul));
+  }
+  const base = d.html.split("/").pop(), jbase = d.json.split("/").pop();
+  const links = el("div",{className:"card links"}, el("h3",{textContent:"The receipt"}),
+    el("a",{href:"/receipts/"+base,target:"_blank",textContent:"Open receipt (code, per-seed numbers, logs)"}),
+    el("a",{href:"/receipts/"+jbase,target:"_blank",textContent:"receipt.json"}),
+    el("div",{className:"muted",textContent:"Re-run it anywhere: python -m receipts verify "+jbase}));
+  box.append(links);
+}
+
+async function start(){
+  const input = $("#input").value.trim(); if (!input) return;
+  if (es) es.close();
+  $("#out").hidden = false; resetStages(); $("#go").disabled = true;
+  const res = await fetch("/api/runs",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({input,seeds:+$("#seeds").value,runner:$("#runner").value})});
+  const {id,error} = await res.json();
+  if (error){ setStage("ingest","error",error); $("#go").disabled = false; return; }
+  es = new EventSource("/api/runs/"+id+"/events");
+  es.onmessage = m => handle(JSON.parse(m.data));
+  es.addEventListener("end", () => { es.close(); $("#go").disabled = false; });
+  es.onerror = () => { es.close(); $("#go").disabled = false; };
+}
+$("#f").addEventListener("submit", ev => { ev.preventDefault(); start(); });
+init();
+</script>
+</body>
+</html>

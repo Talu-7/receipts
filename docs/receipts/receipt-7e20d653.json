@@ -1,0 +1,300 @@
+{
+  "version": 1,
+  "receipt_id": "7e20d653",
+  "created_at": "2026-10-23T22:49:59+00:00",
+  "synthetic_demo": true,
+  "input": "demo:broken",
+  "paper": {
+    "title": "Clinical-notes classifier: 91.3% macro-F1 (proprietary data)",
+    "arxiv_id": null,
+    "url": null,
+    "abstract": "Synthetic example where the data is not public: the agent must say 'inconclusive', not accuse."
+  },
+  "claim": {
+    "id": "c1",
+    "statement": "Classifier reaches 91.3% macro-F1 on the clinical-notes test set.",
+    "metric": "macro-F1 (%)",
+    "value": 91.3,
+    "unit": "%",
+    "dataset": "proprietary clinical notes",
+    "higher_is_better": true,
+    "where": "Table 3"
+  },
+  "claims_all": [
+    {
+      "id": "c1",
+      "statement": "Classifier reaches 91.3% macro-F1 on the clinical-notes test set.",
+      "metric": "macro-F1 (%)",
+      "value": 91.3,
+      "unit": "%",
+      "dataset": "proprietary clinical notes",
+      "higher_is_better": true,
+      "where": "Table 3"
+    }
+  ],
+  "repo": {
+    "url": null,
+    "commit": null
+  },
+  "evidence": [],
+  "script": {
+    "code": "\"\"\"Reproduction of: \"Clinical-notes classifier reaches 91.3% macro-F1\" (synthetic example).\nThe paper's dataset is proprietary and not distributed with the code.\"\"\"\nimport json, os\nseed = int(os.environ.get(\"SEED\", \"0\"))\npath = os.environ.get(\"PAPER_DATASET_PATH\", \"/data/proprietary/clinical_notes_v3.parquet\")\nprint(f\"seed={seed} loading {path}\")\nwith open(path, \"rb\") as f:   # raises FileNotFoundError: the data is not public\n    data = f.read()\nprint(\"RECEIPTS_RESULT \" + json.dumps({\"metric\": \"macro-F1 (%)\", \"value\": 0.0, \"extras\": {}}))\n",
+    "requirements": [],
+    "sha256": "1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237"
+  },
+  "seeds_requested": 8,
+  "runs": [
+    {
+      "seed": 0,
+      "ok": false,
+      "value": null,
+      "metric": null,
+      "extras": {},
+      "seconds": 1.8979556560516357,
+      "job_id": "receipts-7e20d653-s0-95791486",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237",
+        "seed": 0,
+        "network_isolated": false,
+        "exit_code": 1,
+        "run_seconds": 0.03,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "script failed",
+      "log_summary": "The job attempted to load `/data/proprietary/clinical_notes_v3.parquet` using a Python script, but the file was not found, causing a `FileNotFoundError` and an exit code\u202f1. No numerical result was produced. The failure root cause is the missing proprietary data file.",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237\", \"seed\": 0}\nRECEIPTS_META {\"network_isolated\": false}\nseed=0 loading /data/proprietary/clinical_notes_v3.parquet\nRECEIPTS_META {\"exit_code\": 1, \"run_seconds\": 0.03}\nTraceback (most recent call last):\n  File \"/tmp/receipts-jrmddgkc/repro.py\", line 7, in <module>\n    with open(path, \"rb\") as f:   # raises FileNotFoundError: the data is not public\n         ^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/data/proprietary/clinical_notes_v3.parquet'\n"
+    },
+    {
+      "seed": 1,
+      "ok": false,
+      "value": null,
+      "metric": null,
+      "extras": {},
+      "seconds": 1.3973679542541504,
+      "job_id": "receipts-7e20d653-s1-95791486",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237",
+        "seed": 1,
+        "network_isolated": false,
+        "exit_code": 1,
+        "run_seconds": 0.02,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "script failed",
+      "log_summary": "The reproduction script tried to open\u202f`/data/proprietary/clinical_notes_v3.parquet`\u202fbut the file was not present, raising a\u202fFileNotFoundError. This caused the process to exit with code\u202f1 after\u202f0.02\u202fseconds, and no numerical result was produced. The root cause is the missing proprietary data file.",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237\", \"seed\": 1}\nRECEIPTS_META {\"network_isolated\": false}\nseed=1 loading /data/proprietary/clinical_notes_v3.parquet\nRECEIPTS_META {\"exit_code\": 1, \"run_seconds\": 0.02}\nTraceback (most recent call last):\n  File \"/tmp/receipts-8by4hf5u/repro.py\", line 7, in <module>\n    with open(path, \"rb\") as f:   # raises FileNotFoundError: the data is not public\n         ^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/data/proprietary/clinical_notes_v3.parquet'\n"
+    },
+    {
+      "seed": 2,
+      "ok": false,
+      "value": null,
+      "metric": null,
+      "extras": {},
+      "seconds": 1.677490234375,
+      "job_id": "receipts-7e20d653-s2-95791487",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237",
+        "seed": 2,
+        "network_isolated": false,
+        "exit_code": 1,
+        "run_seconds": 0.03,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "script failed",
+      "log_summary": "Job FAILED. The script attempted to load `/data/proprietary/clinical_notes_v3.parquet` but the file was not found, causing a `FileNotFoundError`. No numerical result was produced. The root cause is the missing proprietary data file.",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237\", \"seed\": 2}\nRECEIPTS_META {\"network_isolated\": false}\nseed=2 loading /data/proprietary/clinical_notes_v3.parquet\nRECEIPTS_META {\"exit_code\": 1, \"run_seconds\": 0.03}\nTraceback (most recent call last):\n  File \"/tmp/receipts-las4l2a2/repro.py\", line 7, in <module>\n    with open(path, \"rb\") as f:   # raises FileNotFoundError: the data is not public\n         ^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/data/proprietary/clinical_notes_v3.parquet'\n"
+    },
+    {
+      "seed": 3,
+      "ok": false,
+      "value": null,
+      "metric": null,
+      "extras": {},
+      "seconds": 1.8692798614501953,
+      "job_id": "receipts-7e20d653-s3-95791487",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237",
+        "seed": 3,
+        "network_isolated": false,
+        "exit_code": 1,
+        "run_seconds": 0.03,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "script failed",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237\", \"seed\": 3}\nRECEIPTS_META {\"network_isolated\": false}\nseed=3 loading /data/proprietary/clinical_notes_v3.parquet\nRECEIPTS_META {\"exit_code\": 1, \"run_seconds\": 0.03}\nTraceback (most recent call last):\n  File \"/tmp/receipts-ld5x4aum/repro.py\", line 7, in <module>\n    with open(path, \"rb\") as f:   # raises FileNotFoundError: the data is not public\n         ^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/data/proprietary/clinical_notes_v3.parquet'\n"
+    },
+    {
+      "seed": 4,
+      "ok": false,
+      "value": null,
+      "metric": null,
+      "extras": {},
+      "seconds": 1.5722146034240723,
+      "job_id": "receipts-7e20d653-s4-95791487",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237",
+        "seed": 4,
+        "network_isolated": false,
+        "exit_code": 1,
+        "run_seconds": 0.03,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "script failed",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237\", \"seed\": 4}\nRECEIPTS_META {\"network_isolated\": false}\nseed=4 loading /data/proprietary/clinical_notes_v3.parquet\nRECEIPTS_META {\"exit_code\": 1, \"run_seconds\": 0.03}\nTraceback (most recent call last):\n  File \"/tmp/receipts-rki0_4ch/repro.py\", line 7, in <module>\n    with open(path, \"rb\") as f:   # raises FileNotFoundError: the data is not public\n         ^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/data/proprietary/clinical_notes_v3.parquet'\n"
+    },
+    {
+      "seed": 5,
+      "ok": false,
+      "value": null,
+      "metric": null,
+      "extras": {},
+      "seconds": 1.4572257995605469,
+      "job_id": "receipts-7e20d653-s5-95791487",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237",
+        "seed": 5,
+        "network_isolated": false,
+        "exit_code": 1,
+        "run_seconds": 0.03,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "script failed",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237\", \"seed\": 5}\nRECEIPTS_META {\"network_isolated\": false}\nseed=5 loading /data/proprietary/clinical_notes_v3.parquet\nRECEIPTS_META {\"exit_code\": 1, \"run_seconds\": 0.03}\nTraceback (most recent call last):\n  File \"/tmp/receipts-k9pwf079/repro.py\", line 7, in <module>\n    with open(path, \"rb\") as f:   # raises FileNotFoundError: the data is not public\n         ^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/data/proprietary/clinical_notes_v3.parquet'\n"
+    },
+    {
+      "seed": 6,
+      "ok": false,
+      "value": null,
+      "metric": null,
+      "extras": {},
+      "seconds": 1.9031872749328613,
+      "job_id": "receipts-7e20d653-s6-95791487",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237",
+        "seed": 6,
+        "network_isolated": false,
+        "exit_code": 1,
+        "run_seconds": 0.03,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "script failed",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237\", \"seed\": 6}\nRECEIPTS_META {\"network_isolated\": false}\nseed=6 loading /data/proprietary/clinical_notes_v3.parquet\nRECEIPTS_META {\"exit_code\": 1, \"run_seconds\": 0.03}\nTraceback (most recent call last):\n  File \"/tmp/receipts-olkfvpi4/repro.py\", line 7, in <module>\n    with open(path, \"rb\") as f:   # raises FileNotFoundError: the data is not public\n         ^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/data/proprietary/clinical_notes_v3.parquet'\n"
+    },
+    {
+      "seed": 7,
+      "ok": false,
+      "value": null,
+      "metric": null,
+      "extras": {},
+      "seconds": 1.6221604347229004,
+      "job_id": "receipts-7e20d653-s7-95791488",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237",
+        "seed": 7,
+        "network_isolated": false,
+        "exit_code": 1,
+        "run_seconds": 0.03,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "script failed",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237\", \"seed\": 7}\nRECEIPTS_META {\"network_isolated\": false}\nseed=7 loading /data/proprietary/clinical_notes_v3.parquet\nRECEIPTS_META {\"exit_code\": 1, \"run_seconds\": 0.03}\nTraceback (most recent call last):\n  File \"/tmp/receipts-zb5955f_/repro.py\", line 7, in <module>\n    with open(path, \"rb\") as f:   # raises FileNotFoundError: the data is not public\n         ^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/data/proprietary/clinical_notes_v3.parquet'\n"
+    }
+  ],
+  "verdict": {
+    "verdict": "inconclusive",
+    "claimed": 91.3,
+    "stats": {
+      "n": 0,
+      "mean": null,
+      "std": null,
+      "min": null,
+      "max": null,
+      "ci95": null
+    },
+    "tolerance": null,
+    "reason": "only 0 of 8 runs produced a number (need at least 4)",
+    "claimed_in_range": null,
+    "shortfall": null
+  },
+  "diagnosis": {
+    "category": "data_unavailable",
+    "explanation": "All 8 reproduction runs failed with a FileNotFoundError because the script requires the proprietary dataset at `/data/proprietary/clinical_notes_v3.parquet`, which was not present in the reproduction environment. The log summaries consistently identify the missing proprietary data file as the root cause, and no numerical results were produced. Since the dataset is not publicly distributed, the claimed 91.3% macro-F1 cannot be verified or refuted under the current conditions.",
+    "evidence": [
+      "All 8 seeds report 'script failed' with error 'FileNotFoundError' for `/data/proprietary/clinical_notes_v3.parquet`.",
+      "Log summaries state: 'The root cause is the missing proprietary data file.'",
+      "Verdict notes 'only 0 of 8 runs produced a number (need at least 4)'.",
+      "The reproduction script explicitly loads the path from `PAPER_DATASET_PATH` defaulting to the missing proprietary file."
+    ],
+    "confidence": 0.98,
+    "suggested_check": "Obtain authorized access to the proprietary clinical-notes dataset (version v3) and re-run the reproduction script with the correct data path.",
+    "source": "nemotron-ultra"
+  },
+  "infra": {
+    "backend": "docker",
+    "image": "talhaarif7/receipts-sandbox:latest",
+    "platform": "docker-local",
+    "job_seconds": 13.396881818771362,
+    "wall_seconds": 7.759362697601318,
+    "est_cost_usd": 0,
+    "models": {
+      "nano": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+      "super": "nvidia/nemotron-3-super-120b-a12b",
+      "ultra": "nvidia/Nemotron-3-Ultra-550b-a55b"
+    },
+    "llm_usage": {
+      "nano": {
+        "calls": 3,
+        "prompt_tokens": 949,
+        "completion_tokens": 418
+      },
+      "super": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0
+      },
+      "ultra": {
+        "calls": 1,
+        "prompt_tokens": 1228,
+        "completion_tokens": 536
+      }
+    }
+  },
+  "sha256": "57ec3f4c68fc39a06b259e727810c359443f6eb215327c848a3e375fce1c1380"
+}

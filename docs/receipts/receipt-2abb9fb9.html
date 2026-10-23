@@ -1,0 +1,100 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Receipt 2abb9fb9</title><style>
+body{background:#0b0f17;color:#e5e7eb;font:15px/1.55 system-ui,sans-serif;margin:0}
+main{max-width:920px;margin:0 auto;padding:28px 18px 80px}
+h1{font-size:20px;margin:0 0 4px} h2{font-size:16px;margin:28px 0 8px;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em}
+.banner{border-radius:12px;padding:18px 20px;margin:18px 0;background:#d6336c22;border:1px solid #d6336c}
+.banner .v{font-size:26px;font-weight:800;color:#d6336c;letter-spacing:.02em}
+.muted{color:#9ca3af} a{color:#93c5fd} table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{border-bottom:1px solid #1f2937;padding:6px 8px;text-align:left;vertical-align:top}
+pre{background:#111827;border:1px solid #1f2937;border-radius:8px;padding:12px;overflow:auto;font-size:12.5px}
+.synthetic{background:#78350f;color:#fde68a;padding:10px 14px;border-radius:8px;margin:14px 0;font-weight:600}
+code{background:#111827;padding:2px 6px;border-radius:4px} summary{cursor:pointer;color:#9ca3af}
+</style></head><body><main>
+<h1>Receipt <code>2abb9fb9</code></h1>
+<div class="muted">2026-10-23T22:48:54+00:00 · integrity hash <code>b067c6a4fe0dfad1…</code></div>
+<div class="synthetic">SYNTHETIC DEMO CASE: this is a bundled example, not a real paper, and no real authors are implicated.</div>
+<h2>Paper</h2><div><b>k-NN with a tuned neighbourhood size: 75.6% test accuracy</b><br><span class="muted"></span></div>
+<h2>Claim under test</h2><div>k-NN with a tuned k reaches 75.6% test accuracy.<br><span class="muted">test accuracy (%) · synthetic 250x20 (make_classification) · Table 1</span></div>
+<div class="banner"><div class="v">DISCREPANCY FOUND</div><div>claimed <b>75.60</b> vs reproduced <b>66.54</b> (±1.21 over 8 of 8 runs)</div><div class="muted"></div><svg viewBox="0 0 720 90" width="100%" role="img" aria-label="claimed vs reproduced"><line x1="20" y1="55" x2="700" y2="55" stroke="#4b5563" stroke-width="2"/><rect x="133.3" y="42" width="167.6" height="26" rx="4" fill="#3b82f6" opacity=".35"/><rect x="185.7" y="46" width="80.4" height="18" rx="3" fill="#3b82f6" opacity=".8"/><line x1="225.8" y1="38" x2="225.8" y2="72" stroke="#fff" stroke-width="3"/><text x="225.8" y="88" fill="#e5e7eb" font-size="13" text-anchor="middle">reproduced mean 66.5</text><line x1="586.7" y1="14" x2="586.7" y2="72" stroke="#f43f5e" stroke-width="3" stroke-dasharray="5 3"/><text x="586.7" y="11" fill="#fda4af" font-size="13" text-anchor="middle">claimed 75.6</text></svg></div>
+<h2>Why does it differ?</h2>
+<div><b>data leakage</b> <span class="muted">(confidence 0.95; source: nemotron-ultra)</span></div>
+<p>The claimed 75.6% accuracy matches the variant where k is chosen by maximizing accuracy on the test set itself (data leakage), not by cross-validation on the training data. The reproduction&#x27;s proper CV-on-train variant averages 66.5% (95% CI [65.5, 67.5]), while the test-tuned variant averages ~75.7% across seeds, with individual seeds reaching 75.4–77.5%. The paper&#x27;s reported value aligns with the leaked variant.</p>
+<ul><li>Claimed value: 75.6%</li><li>Described (CV-on-train) mean: 66.5% (seeds 64.2–68.4%)</li><li>Variant tuned on test set: per-seed values 73.7%, 75.4%, 76.7%, 76.7%, 75.1%, 76.0%, 74.6%, 77.5%</li><li>Seed 1 test-tuned variant: 75.439% (closest to claim)</li></ul><div class="muted">Suggested check: Confirm whether the paper&#x27;s k-selection procedure used the test set for hyperparameter tuning instead of cross-validation on the training set.</div>
+<h2>Per-seed runs</h2><table><tr><th>seed</th><th>status</th><th>value</th><th>extras</th><th>time</th><th>job</th><th>summary</th></tr><tr><td>0</td><td>ok</td><td>65.965</td><td>{&quot;variant_hyperparams_tuned_on_test_set&quot;: 73.684}</td><td>8.3s</td><td>receipts-2abb9fb9-s0-95719917</td><td>Job completed successfully. The final test accuracy reported is 65.965 % (the best variant achieved 73.684 % when tuned on the test set). No failure occurred; exit code 0 indicates normal termination.</td></tr><tr><td>1</td><td>ok</td><td>66.140</td><td>{&quot;variant_hyperparams_tuned_on_test_set&quot;: 75.439}</td><td>8.8s</td><td>receipts-2abb9fb9-s1-95719917</td><td></td></tr><tr><td>2</td><td>ok</td><td>68.421</td><td>{&quot;variant_hyperparams_tuned_on_test_set&quot;: 76.667}</td><td>8.7s</td><td>receipts-2abb9fb9-s2-95719917</td><td></td></tr><tr><td>3</td><td>ok</td><td>67.018</td><td>{&quot;variant_hyperparams_tuned_on_test_set&quot;: 76.667}</td><td>8.4s</td><td>receipts-2abb9fb9-s3-95719918</td><td></td></tr><tr><td>4</td><td>ok</td><td>67.193</td><td>{&quot;variant_hyperparams_tuned_on_test_set&quot;: 75.088}</td><td>8.6s</td><td>receipts-2abb9fb9-s4-95719918</td><td></td></tr><tr><td>5</td><td>ok</td><td>66.842</td><td>{&quot;variant_hyperparams_tuned_on_test_set&quot;: 75.965}</td><td>8.7s</td><td>receipts-2abb9fb9-s5-95719919</td><td></td></tr><tr><td>6</td><td>ok</td><td>64.211</td><td>{&quot;variant_hyperparams_tuned_on_test_set&quot;: 74.561}</td><td>8.5s</td><td>receipts-2abb9fb9-s6-95719920</td><td></td></tr><tr><td>7</td><td>ok</td><td>66.491</td><td>{&quot;variant_hyperparams_tuned_on_test_set&quot;: 77.544}</td><td>8.7s</td><td>receipts-2abb9fb9-s7-95719922</td><td></td></tr></table>
+<h2>Web evidence (Tavily)</h2><ul><li class="muted">No errata or replication reports found for this paper (or search not configured).</li></ul>
+<h2>Executed code</h2><div class="muted">sha256 61e20e9a39ab7167b3dae816ab9769cfd278617884f69c70a3ff7d01412dd95d · requirements: numpy, scikit-learn</div>
+<pre>&quot;&quot;&quot;Reproduction of: &quot;k-NN with a tuned neighbourhood size reaches 75.6% test accuracy&quot; (synthetic example).
+
+Protocol as described: k is chosen by 5-fold CV on the training data only. We also compute the variant
+in which k is chosen to maximise accuracy on the TEST split itself.
+&quot;&quot;&quot;
+import json, os
+import numpy as np
+from sklearn.datasets import make_classification
+from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+
+seed = int(os.environ.get(&quot;SEED&quot;, &quot;0&quot;))
+X, y = make_classification(n_samples=250, n_features=20, n_informative=5, n_redundant=0, flip_y=0.12, class_sep=0.7, random_state=3)
+ks = list(range(1, 60, 2))
+described, tuned_on_test = [], []
+for i in range(15):
+    Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.15, random_state=seed * 100 + i, stratify=y)
+    gs = GridSearchCV(KNeighborsClassifier(), {&quot;n_neighbors&quot;: ks}, cv=5).fit(Xtr, ytr)   # described: choose k by CV on training data
+    described.append(gs.score(Xte, yte))
+    tuned_on_test.append(max(KNeighborsClassifier(k).fit(Xtr, ytr).score(Xte, yte) for k in ks))  # variant: choose k on the TEST set
+v = float(np.mean(described)) * 100
+t = float(np.mean(tuned_on_test)) * 100
+print(f&quot;seed={seed} k chosen by train-CV = {v:.2f}  k chosen on test = {t:.2f}&quot;)
+print(&quot;RECEIPTS_RESULT &quot; + json.dumps({&quot;metric&quot;: &quot;test accuracy (%)&quot;, &quot;value&quot;: round(v, 3),
+                                       &quot;extras&quot;: {&quot;variant_hyperparams_tuned_on_test_set&quot;: round(t, 3)}}))
+</pre>
+<h2>Environment</h2><table>
+<tr><td>repo</td><td>None @ None</td></tr>
+<tr><td>backend / image / platform</td><td>docker / talhaarif7/receipts-sandbox:latest / docker-local</td></tr>
+<tr><td>job-seconds / wall-seconds / est. cost</td><td>68.6 / 14.3 / $0.0000</td></tr>
+<tr><td>models</td><td>{&quot;nano&quot;: &quot;nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B&quot;, &quot;super&quot;: &quot;nvidia/nemotron-3-super-120b-a12b&quot;, &quot;ultra&quot;: &quot;nvidia/Nemotron-3-Ultra-550b-a55b&quot;}</td></tr></table>
+<h2>Re-run this receipt</h2><pre>python -m receipts verify receipt-2abb9fb9.json</pre>
+<h2>Raw logs</h2><details><summary>seed 0 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;61e20e9a39ab7167b3dae816ab9769cfd278617884f69c70a3ff7d01412dd95d&quot;, &quot;seed&quot;: 0}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=0 k chosen by train-CV = 65.96  k chosen on test = 73.68
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;test accuracy (%)&quot;, &quot;value&quot;: 65.965, &quot;extras&quot;: {&quot;variant_hyperparams_tuned_on_test_set&quot;: 73.684}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 7.03}
+</pre></details><details><summary>seed 1 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;61e20e9a39ab7167b3dae816ab9769cfd278617884f69c70a3ff7d01412dd95d&quot;, &quot;seed&quot;: 1}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=1 k chosen by train-CV = 66.14  k chosen on test = 75.44
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;test accuracy (%)&quot;, &quot;value&quot;: 66.14, &quot;extras&quot;: {&quot;variant_hyperparams_tuned_on_test_set&quot;: 75.439}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 7.13}
+</pre></details><details><summary>seed 2 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;61e20e9a39ab7167b3dae816ab9769cfd278617884f69c70a3ff7d01412dd95d&quot;, &quot;seed&quot;: 2}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=2 k chosen by train-CV = 68.42  k chosen on test = 76.67
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;test accuracy (%)&quot;, &quot;value&quot;: 68.421, &quot;extras&quot;: {&quot;variant_hyperparams_tuned_on_test_set&quot;: 76.667}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 7.08}
+</pre></details><details><summary>seed 3 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;61e20e9a39ab7167b3dae816ab9769cfd278617884f69c70a3ff7d01412dd95d&quot;, &quot;seed&quot;: 3}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=3 k chosen by train-CV = 67.02  k chosen on test = 76.67
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;test accuracy (%)&quot;, &quot;value&quot;: 67.018, &quot;extras&quot;: {&quot;variant_hyperparams_tuned_on_test_set&quot;: 76.667}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 6.98}
+</pre></details><details><summary>seed 4 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;61e20e9a39ab7167b3dae816ab9769cfd278617884f69c70a3ff7d01412dd95d&quot;, &quot;seed&quot;: 4}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=4 k chosen by train-CV = 67.19  k chosen on test = 75.09
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;test accuracy (%)&quot;, &quot;value&quot;: 67.193, &quot;extras&quot;: {&quot;variant_hyperparams_tuned_on_test_set&quot;: 75.088}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 6.79}
+</pre></details><details><summary>seed 5 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;61e20e9a39ab7167b3dae816ab9769cfd278617884f69c70a3ff7d01412dd95d&quot;, &quot;seed&quot;: 5}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=5 k chosen by train-CV = 66.84  k chosen on test = 75.96
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;test accuracy (%)&quot;, &quot;value&quot;: 66.842, &quot;extras&quot;: {&quot;variant_hyperparams_tuned_on_test_set&quot;: 75.965}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 6.93}
+</pre></details><details><summary>seed 6 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;61e20e9a39ab7167b3dae816ab9769cfd278617884f69c70a3ff7d01412dd95d&quot;, &quot;seed&quot;: 6}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=6 k chosen by train-CV = 64.21  k chosen on test = 74.56
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;test accuracy (%)&quot;, &quot;value&quot;: 64.211, &quot;extras&quot;: {&quot;variant_hyperparams_tuned_on_test_set&quot;: 74.561}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 6.78}
+</pre></details><details><summary>seed 7 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;61e20e9a39ab7167b3dae816ab9769cfd278617884f69c70a3ff7d01412dd95d&quot;, &quot;seed&quot;: 7}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=7 k chosen by train-CV = 66.49  k chosen on test = 77.54
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;test accuracy (%)&quot;, &quot;value&quot;: 66.491, &quot;extras&quot;: {&quot;variant_hyperparams_tuned_on_test_set&quot;: 77.544}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 6.98}
+</pre></details>
+</main></body></html>

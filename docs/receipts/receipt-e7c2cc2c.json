@@ -1,0 +1,324 @@
+{
+  "version": 1,
+  "receipt_id": "e7c2cc2c",
+  "created_at": "2026-10-23T22:49:15+00:00",
+  "synthetic_demo": true,
+  "input": "demo:dupes",
+  "paper": {
+    "title": "1-NN reaches 91.3% CV accuracy",
+    "arxiv_id": null,
+    "url": null,
+    "abstract": "Synthetic planted error: duplicate rows leak across the train/test split."
+  },
+  "claim": {
+    "id": "c1",
+    "statement": "1-NN reaches 91.3% 5-fold CV accuracy.",
+    "metric": "5-fold CV accuracy (%)",
+    "value": 91.3,
+    "unit": "%",
+    "dataset": "synthetic 850 rows incl. 350 exact duplicates",
+    "higher_is_better": true,
+    "where": "Table 1"
+  },
+  "claims_all": [
+    {
+      "id": "c1",
+      "statement": "1-NN reaches 91.3% 5-fold CV accuracy.",
+      "metric": "5-fold CV accuracy (%)",
+      "value": 91.3,
+      "unit": "%",
+      "dataset": "synthetic 850 rows incl. 350 exact duplicates",
+      "higher_is_better": true,
+      "where": "Table 1"
+    }
+  ],
+  "repo": {
+    "url": null,
+    "commit": null
+  },
+  "evidence": [],
+  "script": {
+    "code": "\"\"\"Reproduction of: \"1-NN reaches 91.3% 5-fold CV accuracy\" (synthetic example).\n\nThe released dataset contains exact duplicate rows. Protocol as described: duplicates are removed before\nsplitting. We also compute the accuracy when they are not removed (copies land in train and test).\n\"\"\"\nimport json, os\nimport numpy as np\nfrom sklearn.datasets import make_classification\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.neighbors import KNeighborsClassifier\n\nseed = int(os.environ.get(\"SEED\", \"0\"))\nX, y = make_classification(n_samples=500, n_features=15, n_informative=6, n_redundant=0, flip_y=0.1, class_sep=0.8, random_state=5)\ndup = np.random.RandomState(1).choice(len(X), 350, replace=False)\nXd, yd = np.vstack([X, X[dup]]), np.concatenate([y, y[dup]])\nknn = KNeighborsClassifier(1)\ncv = StratifiedKFold(5, shuffle=True, random_state=seed)\nXu, idx = np.unique(Xd, axis=0, return_index=True)                      # described: duplicates removed first\ndescribed = float(np.mean(cross_val_score(knn, Xu, yd[idx], cv=cv))) * 100\nno_dedup = float(np.mean(cross_val_score(knn, Xd, yd, cv=cv))) * 100    # variant: duplicates left in\nprint(f\"seed={seed} dedup = {described:.2f}  no-dedup = {no_dedup:.2f}\")\nprint(\"RECEIPTS_RESULT \" + json.dumps({\"metric\": \"5-fold CV accuracy (%)\", \"value\": round(described, 3),\n                                       \"extras\": {\"variant_no_dedup\": round(no_dedup, 3)}}))\n",
+    "requirements": [
+      "numpy",
+      "scikit-learn"
+    ],
+    "sha256": "900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da"
+  },
+  "seeds_requested": 8,
+  "runs": [
+    {
+      "seed": 0,
+      "ok": true,
+      "value": 74.6,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {
+        "variant_no_dedup": 90.824
+      },
+      "seconds": 2.7351865768432617,
+      "job_id": "receipts-e7c2cc2c-s0-95745723",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da",
+        "seed": 0,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.57,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "Job succeeded. The reported 5\u2011fold CV accuracy is **74.6\u202f%**, with a no\u2011deduplication variant achieving **90.824\u202f%**. No failure occurred; exit code\u202f0 indicates successful completion.",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da\", \"seed\": 0}\nRECEIPTS_META {\"network_isolated\": false}\nseed=0 dedup = 74.60  no-dedup = 90.82\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 74.6, \"extras\": {\"variant_no_dedup\": 90.824}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.57}\n"
+    },
+    {
+      "seed": 1,
+      "ok": true,
+      "value": 75.8,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {
+        "variant_no_dedup": 92.0
+      },
+      "seconds": 2.6198906898498535,
+      "job_id": "receipts-e7c2cc2c-s1-95745724",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da",
+        "seed": 1,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.52,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da\", \"seed\": 1}\nRECEIPTS_META {\"network_isolated\": false}\nseed=1 dedup = 75.80  no-dedup = 92.00\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 75.8, \"extras\": {\"variant_no_dedup\": 92.0}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.52}\n"
+    },
+    {
+      "seed": 2,
+      "ok": true,
+      "value": 73.2,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {
+        "variant_no_dedup": 91.294
+      },
+      "seconds": 3.0151216983795166,
+      "job_id": "receipts-e7c2cc2c-s2-95745724",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da",
+        "seed": 2,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.62,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da\", \"seed\": 2}\nRECEIPTS_META {\"network_isolated\": false}\nseed=2 dedup = 73.20  no-dedup = 91.29\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 73.2, \"extras\": {\"variant_no_dedup\": 91.294}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.62}\n"
+    },
+    {
+      "seed": 3,
+      "ok": true,
+      "value": 77.4,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {
+        "variant_no_dedup": 92.118
+      },
+      "seconds": 3.2221200466156006,
+      "job_id": "receipts-e7c2cc2c-s3-95745724",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da",
+        "seed": 3,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.62,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da\", \"seed\": 3}\nRECEIPTS_META {\"network_isolated\": false}\nseed=3 dedup = 77.40  no-dedup = 92.12\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 77.4, \"extras\": {\"variant_no_dedup\": 92.118}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.62}\n"
+    },
+    {
+      "seed": 4,
+      "ok": true,
+      "value": 74.8,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {
+        "variant_no_dedup": 91.059
+      },
+      "seconds": 2.8626837730407715,
+      "job_id": "receipts-e7c2cc2c-s4-95745725",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da",
+        "seed": 4,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.52,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da\", \"seed\": 4}\nRECEIPTS_META {\"network_isolated\": false}\nseed=4 dedup = 74.80  no-dedup = 91.06\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 74.8, \"extras\": {\"variant_no_dedup\": 91.059}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.52}\n"
+    },
+    {
+      "seed": 5,
+      "ok": true,
+      "value": 75.0,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {
+        "variant_no_dedup": 91.529
+      },
+      "seconds": 3.1955699920654297,
+      "job_id": "receipts-e7c2cc2c-s5-95745725",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da",
+        "seed": 5,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.57,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da\", \"seed\": 5}\nRECEIPTS_META {\"network_isolated\": false}\nseed=5 dedup = 75.00  no-dedup = 91.53\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 75.0, \"extras\": {\"variant_no_dedup\": 91.529}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.57}\n"
+    },
+    {
+      "seed": 6,
+      "ok": true,
+      "value": 73.4,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {
+        "variant_no_dedup": 90.0
+      },
+      "seconds": 3.1563878059387207,
+      "job_id": "receipts-e7c2cc2c-s6-95745725",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da",
+        "seed": 6,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.57,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da\", \"seed\": 6}\nRECEIPTS_META {\"network_isolated\": false}\nseed=6 dedup = 73.40  no-dedup = 90.00\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 73.4, \"extras\": {\"variant_no_dedup\": 90.0}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.57}\n"
+    },
+    {
+      "seed": 7,
+      "ok": true,
+      "value": 73.2,
+      "metric": "5-fold CV accuracy (%)",
+      "extras": {
+        "variant_no_dedup": 91.529
+      },
+      "seconds": 3.0731961727142334,
+      "job_id": "receipts-e7c2cc2c-s7-95745727",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da",
+        "seed": 7,
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 1.57,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:bd16bd0ed2a048d7dcaa3ed7fc9b6ba31861183ed04543213ce0882c1d02749a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "RECEIPTS_META {\"python\": \"3.11.10\", \"script_sha256\": \"900dbefc746e5ff9d55eef90143f8b656ae4feab694c30da861710c5b20fc1da\", \"seed\": 7}\nRECEIPTS_META {\"network_isolated\": false}\nseed=7 dedup = 73.20  no-dedup = 91.53\nRECEIPTS_RESULT {\"metric\": \"5-fold CV accuracy (%)\", \"value\": 73.2, \"extras\": {\"variant_no_dedup\": 91.529}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 1.57}\n"
+    }
+  ],
+  "verdict": {
+    "verdict": "discrepancy_found",
+    "claimed": 91.3,
+    "stats": {
+      "n": 8,
+      "mean": 74.675,
+      "std": 1.4538127212854575,
+      "min": 73.2,
+      "max": 77.4,
+      "ci95": [
+        73.45938901403598,
+        75.89061098596402
+      ]
+    },
+    "tolerance": 1.0,
+    "allowed_gap": 2.907625442570915,
+    "partial_gap": 5.81525088514183,
+    "shortfall": 16.625,
+    "claimed_in_range": false,
+    "reason": "",
+    "higher_is_better": true
+  },
+  "diagnosis": {
+    "category": "data_leakage",
+    "explanation": "The claimed 91.3% matches the variant where duplicates are not removed before cross-validation (variant_no_dedup values: 91.294% at seed 2, 91.529% at seeds 5 and 7), while the described protocol (duplicates removed first) yields only ~74.7% mean accuracy. This indicates the reported result likely comes from a data leakage scenario where exact duplicate rows appear in both training and test folds, inflating accuracy.",
+    "evidence": [
+      "Claimed value 91.3% matches variant_no_dedup at seed 2 (91.294%) and seeds 5/7 (91.529%)",
+      "Described method (with dedup) gives mean 74.675% (range 73.2-77.4%) across 8 seeds",
+      "Reproduction script explicitly computes both variants: 'described' (dedup first) and 'no_dedup' (duplicates left in)"
+    ],
+    "confidence": 0.95,
+    "suggested_check": "Verify whether the original paper's code actually removed duplicates before splitting or if cross-validation was run on the full dataset with duplicates intact.",
+    "source": "nemotron-ultra"
+  },
+  "infra": {
+    "backend": "docker",
+    "image": "talhaarif7/receipts-sandbox:latest",
+    "platform": "docker-local",
+    "job_seconds": 23.880156755447388,
+    "wall_seconds": 9.977708101272583,
+    "est_cost_usd": 0,
+    "models": {
+      "nano": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+      "super": "nvidia/nemotron-3-super-120b-a12b",
+      "ultra": "nvidia/Nemotron-3-Ultra-550b-a55b"
+    },
+    "llm_usage": {
+      "nano": {
+        "calls": 1,
+        "prompt_tokens": 261,
+        "completion_tokens": 141
+      },
+      "super": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0
+      },
+      "ultra": {
+        "calls": 1,
+        "prompt_tokens": 1564,
+        "completion_tokens": 1003
+      }
+    }
+  },
+  "sha256": "967ac7904f639186f89e4271b26acbef8c582fcb88eb7b25ce8d5d5d3b7bae62"
+}

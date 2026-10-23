@@ -1,0 +1,222 @@
+{
+  "version": 1,
+  "receipt_id": "2e4f5b76",
+  "created_at": "2026-10-23T22:51:10+00:00",
+  "synthetic_demo": false,
+  "input": "https://arxiv.org/abs/1706.03762",
+  "paper": {
+    "title": "Attention Is All You Need",
+    "arxiv_id": "1706.03762",
+    "url": "https://arxiv.org/abs/1706.03762",
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data."
+  },
+  "claim": {
+    "id": "c5",
+    "statement": "A 4\u2011layer Transformer obtains 92.7 F1 on WSJ Section 23 for English constituency parsing in the semi\u2011supervised setting.",
+    "metric": "F1",
+    "value": 92.7,
+    "unit": "",
+    "dataset": "WSJ Section 23 (Penn Treebank)",
+    "higher_is_better": true,
+    "where": "Table 4",
+    "tractable": true,
+    "est_gpu_minutes": 5
+  },
+  "claims_all": [
+    {
+      "id": "c1",
+      "statement": "The Transformer big model achieves 28.4 BLEU on the WMT 2014 English-to-German test set.",
+      "metric": "BLEU",
+      "value": 28.4,
+      "unit": "%",
+      "dataset": "WMT 2014 English-to-German (newstest2014)",
+      "higher_is_better": true,
+      "where": "Abstract and Table 2",
+      "tractable": false,
+      "est_gpu_minutes": 40320
+    },
+    {
+      "id": "c2",
+      "statement": "The Transformer big model achieves 41.8 BLEU on the WMT 2014 English-to-French test set.",
+      "metric": "BLEU",
+      "value": 41.8,
+      "unit": "%",
+      "dataset": "WMT 2014 English-to-French (newstest2014)",
+      "higher_is_better": true,
+      "where": "Abstract and Table 2",
+      "tractable": false,
+      "est_gpu_minutes": 40320
+    },
+    {
+      "id": "c3",
+      "statement": "The base Transformer model is trained for 100,000 steps, which corresponds to about 12 hours of wall\u2011clock time on 8 P100 GPUs.",
+      "metric": "training time",
+      "value": 12.0,
+      "unit": "hours",
+      "dataset": "WMT 2014 English-to-German / English-to-French",
+      "higher_is_better": false,
+      "where": "Section 5.2",
+      "tractable": false,
+      "est_gpu_minutes": 5760
+    },
+    {
+      "id": "c4",
+      "statement": "The big Transformer model is trained for 300,000 steps, which corresponds to about 3.5 days of wall\u2011clock time on 8 P100 GPUs.",
+      "metric": "training time",
+      "value": 3.5,
+      "unit": "days",
+      "dataset": "WMT 2014 English-to-German / English-to-French",
+      "higher_is_better": false,
+      "where": "Section 5.2",
+      "tractable": false,
+      "est_gpu_minutes": 40320
+    },
+    {
+      "id": "c5",
+      "statement": "A 4\u2011layer Transformer obtains 92.7 F1 on WSJ Section 23 for English constituency parsing in the semi\u2011supervised setting.",
+      "metric": "F1",
+      "value": 92.7,
+      "unit": "",
+      "dataset": "WSJ Section 23 (Penn Treebank)",
+      "higher_is_better": true,
+      "where": "Table 4",
+      "tractable": true,
+      "est_gpu_minutes": 5
+    },
+    {
+      "id": "c6",
+      "statement": "The base Transformer model (as listed in Table 3) reaches 25.8 BLEU on the English\u2011to\u2011German development set (newstest2013).",
+      "metric": "BLEU",
+      "value": 25.8,
+      "unit": "%",
+      "dataset": "WMT 2013 English-to-German (newstest2013)",
+      "higher_is_better": true,
+      "where": "Table 3 (base row)",
+      "tractable": true,
+      "est_gpu_minutes": 5
+    }
+  ],
+  "repo": {},
+  "evidence": [
+    {
+      "kind": "replication",
+      "title": "Attention Is All You Need",
+      "url": "https://arxiv.org/html/1706.03762v7",
+      "snippet": "We also experimented with using learned positional embeddings  instead, and found that the two versions produced nearly identical results (see Table 3 row (E)). We chose the sinusoidal version because it may allow the model to extrapolate to sequence lengths longer than the ones encountered during t",
+      "why": "Describes a reproduction attempt from scratch with a specific translation scoring issue."
+    },
+    {
+      "kind": "replication",
+      "title": "Reproducing the \u201cAttention is all you need\u201d Paper from Scratch",
+      "url": "https://medium.com/@martin.p.dittgen/reproducing-the-attention-is-all-you-need-paper-from-scratch-d2fb40bb25d4",
+      "snippet": "The translation receives a score of zero because the model used synonyms like _Vorschriften_ for _regulations_, instead of _Bestimmungen_; or _Besatzungsmitglieder_ for _crew members_, instead of _Kabinenpersonal_.\n\nI\u2019m left pondering the reasons for these results: [...] However, our translation app",
+      "why": "Also details a reproduction effort, noting a zero translation score due to synonym mismatches."
+    },
+    {
+      "kind": "data",
+      "title": "(PDF) Attention Is All You Need",
+      "url": "https://www.academia.edu/146203279/Attention_Is_All_You_Need",
+      "snippet": "downloadDownload free PDFView PDFchevron\\_right\n\nTraining Deeper Neural Machine Translation Models with Transparent Attention\n\nOrhan FIRAT\n\nProceedings of the 2018 Conference on Empirical Methods in Natural Language Processing, 2018 [...] downloadDownload free PDFView PDFchevron\\_right\n\nAttention 3D"
+    },
+    {
+      "kind": "data",
+      "title": "GitHub - brandokoch/attention-is-all-you-need-paper: Original transformer paper: Implementation of Vaswani, Ashish, et al. \"Attention is all you need.\" Advances in neural information processing systems. 2017. \u00b7 GitHub",
+      "url": "https://github.com/brandokoch/attention-is-all-you-need-paper",
+      "snippet": "Same WMT 2014 data is used for the English-to-German translation task. Dataset contains about 4,500,000 sentence pairs but you can manually specify the dataset size if you want to lower it and see some results faster. When training is initiated the dataset is automatically downloaded, preprocessed, "
+    },
+    {
+      "kind": "data",
+      "title": "Attention is All You Need",
+      "url": "https://research.google/pubs/attention-is-all-you-need",
+      "snippet": "Google Research\n\n \n\n# Attention is All You Need\n\nAshish Vaswani\n\nNoam Shazeer\n\nNiki Parmar\n\nJakob Uszkoreit\n\nLlion Jones\n\nAidan N. Gomez\n\nLukasz Kaiser\n\nIllia Polosukhin\n\nNIPS (2017)\n\nDownload   Google Scholar  Listen with Illuminate\n\n## Abstract"
+    },
+    {
+      "kind": "data",
+      "title": "Attention Is All You Need - Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Attention_Is_All_You_Need",
+      "snippet": "\"Attention Is All You Need\" is a 2017 research paper on machine learning authored by eight scientists and engineers working at Google. The paper introduced a new deep learning architecture known as the transformer \"Transformer (deep learning)\"), based on the attention mechanism \"Attention (machine l"
+    },
+    {
+      "kind": "code",
+      "title": "GitHub - retrogtx/attention-is-all-you-need: attention is all you need, implementation \u00b7 GitHub",
+      "url": "https://github.com/retrogtx/attention-is-all-you-need",
+      "snippet": "The code is 100% possible with the help of Pytorch Transformers from Scratch (Attention is all you need) video by Aladdin Persso.\n\nOverview  \n The transformer model has been a significant breakthrough in the field of machine learning, particularly in Natural Language Processing (NLP). It introduced "
+    },
+    {
+      "kind": "code",
+      "title": "GitHub - tanjeffreyz/attention-is-all-you-need: PyTorch implementation of \"Attention Is All You Need\" by Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin \u00b7 GitHub",
+      "url": "https://github.com/tanjeffreyz/attention-is-all-you-need",
+      "snippet": "## Repository files navigation\n\n# Attention Is All You Need\n\n## Architecture\n\n### Positional Encoding\n\nThe position of each token in a sequence is encoded using the following formula and then\nadded on top of the token's embedding vector.\n\n$$PE\\_{(pos, 2i)} = sin(pos / 10000^{2i / d\\_{model}})$$\n\n$$P"
+    },
+    {
+      "kind": "code",
+      "title": "GitHub - lsdefine/attention-is-all-you-need-keras: A Keras+TensorFlow Implementation of the Transformer: Attention Is All You Need \u00b7 GitHub",
+      "url": "https://github.com/lsdefine/attention-is-all-you-need-keras",
+      "snippet": "### en2de\\_main.py\n\n This task is same as in jadore801120/attention-is-all-you-need-pytorch: WMT'16 Multimodal Translation: Multi30k (de-en) ( We borrowed the data preprocessing step 0 and 1 in the repository, and then construct the input file en2de.s2s.txt\n\n The code achieves near results as in the"
+    },
+    {
+      "kind": "code",
+      "title": "GitHub - a-r-r-o-w/attention-is-all-you-need: Pytorch implementation of the reknowned \"Attention Is All You Need\" paper - NeurIPS 2017 \u00b7 GitHub",
+      "url": "https://github.com/a-r-r-o-w/attention-is-all-you-need",
+      "snippet": "### References\n\n \n \n \n \n \n \n\n```\n@misc{vaswani2023attention, title={Attention Is All You Need}, author={Ashish Vaswani and Noam Shazeer and Niki Parmar and Jakob Uszkoreit and Llion Jones and Aidan N. Gomez and Lukasz Kaiser and Illia Polosukhin}, year={2023}, eprint={1706.03762}, archivePrefix={arX"
+    }
+  ],
+  "script": {
+    "code": "",
+    "requirements": [],
+    "sha256": ""
+  },
+  "seeds_requested": 0,
+  "runs": [],
+  "verdict": {
+    "verdict": "inconclusive",
+    "claimed": 92.7,
+    "stats": {
+      "n": 0,
+      "mean": null,
+      "std": null,
+      "min": null,
+      "max": null,
+      "ci95": null
+    },
+    "tolerance": null,
+    "reason": "could not generate an acceptable script: script contains the claimed value 92.7 as a literal",
+    "claimed_in_range": null,
+    "shortfall": null
+  },
+  "diagnosis": {
+    "category": "cannot_determine",
+    "explanation": "could not generate an acceptable script: script contains the claimed value 92.7 as a literal",
+    "evidence": [],
+    "confidence": 1.0,
+    "suggested_check": "Fix the blocker above and re-run.",
+    "source": "pipeline"
+  },
+  "infra": {
+    "backend": "docker",
+    "image": null,
+    "platform": null,
+    "job_seconds": 0.0,
+    "wall_seconds": 70.6939344406128,
+    "est_cost_usd": 0.0,
+    "models": null,
+    "llm_usage": {
+      "nano": {
+        "calls": 1,
+        "prompt_tokens": 963,
+        "completion_tokens": 1802
+      },
+      "super": {
+        "calls": 3,
+        "prompt_tokens": 19803,
+        "completion_tokens": 8989
+      },
+      "ultra": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0
+      }
+    }
+  },
+  "sha256": "8830eacd542f16902325c4afe8d2f9aed39896e14338835f5cbe17ee92c06cb5"
+}

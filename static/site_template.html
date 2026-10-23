@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Receipts: does the headline result reproduce?</title>
+<meta name="description" content="An agent that checks whether a paper's headline result actually reproduces, built on NVIDIA Nemotron and Nebius Token Factory.">
+<style>
+  :root{--bg:#0b0f17;--panel:#111827;--line:#1f2937;--text:#e5e7eb;--muted:#9ca3af;--accent:#76b900;
+        --green:#1f9d55;--amber:#d9a400;--red:#d6336c;--grey:#6b7280;--blue:#3b82f6}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+  main{max-width:980px;margin:0 auto;padding:0 18px 90px}
+  a{color:#93c5fd}
+  .hero{padding:56px 0 26px}
+  .kicker{color:var(--accent);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+  h1{margin:6px 0 10px;font-size:clamp(34px,6vw,54px);letter-spacing:-.03em;line-height:1.05}
+  h1 span{color:var(--accent)}
+  .lede{max-width:760px;color:#cbd5e1;font-size:18px}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  .badge{font-size:12.5px;padding:4px 10px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+  .badge b{color:var(--text)}
+  h2{margin:44px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+  .sub{color:var(--muted);margin:0 0 14px;max-width:760px}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .step b{display:block;font-size:14px}
+  .step small{color:var(--muted)}
+  .step .m{color:#bef264;font-size:12px;font-weight:600}
+  .cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+  .case{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;color:var(--text);font:inherit;position:relative}
+  .case:hover{border-color:var(--accent)}
+  .case.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+  .case b{display:block;font-size:14px;margin:2px 0 6px;padding-right:6px}
+  .case small{color:var(--muted);display:block}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;padding:1px 7px;border-radius:6px;margin-right:6px}
+  .tag.real{background:#14532d;color:#bbf7d0}
+  .tag.syn{background:#78350f;color:#fde68a}
+  .vdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:14px 0}
+  .stages{display:grid;gap:6px}
+  .stage{display:flex;gap:10px;align-items:baseline;color:var(--muted)}
+  .stage .dot{width:10px;height:10px;border-radius:50%;background:var(--line);flex:none;transform:translateY(1px)}
+  .stage.start .dot{background:var(--blue);animation:pulse 1s infinite}
+  .stage.done .dot{background:var(--green)}
+  .stage.warn .dot{background:var(--amber)}
+  .stage.done,.stage.start{color:var(--text)}
+  .stage .name{width:92px;flex:none;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  @keyframes pulse{50%{opacity:.35}}
+  .seeds{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .chip{font:12.5px ui-monospace,monospace;padding:4px 8px;border-radius:8px;background:#0b1220;border:1px solid var(--line);color:var(--muted)}
+  .chip.run{border-color:var(--blue);animation:pulse 1s infinite}
+  .chip.ok{color:var(--text);border-color:#2b6a46}
+  .chip.bad{color:#fca5a5;border-color:#7f1d1d}
+  .banner{border-radius:14px;padding:20px 22px;margin:14px 0;border:1px solid}
+  .banner .v{font-size:30px;font-weight:800;letter-spacing:.01em}
+  .banner .cmp{font-size:17px;margin-top:4px}
+  .muted{color:var(--muted)}
+  h3{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+  .synthetic{background:#78350f;color:#fde68a;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;margin-top:10px}
+  ul{margin:6px 0 0;padding-left:20px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  td,th{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:12px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .kpi .n{font-size:28px;font-weight:800;color:#bef264}
+  .kpi small{color:var(--muted)}
+  pre{background:#0b1220;border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;font-size:13px}
+  footer{margin-top:50px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <div class="kicker">Nebius × NVIDIA Global AI Hackathon</div>
+    <h1>Re<span>ceipts</span></h1>
+    <p class="lede">Papers claim numbers. Receipts re-runs them. Paste an arXiv link and an agent extracts the headline claim, finds the code, runs the reproduction over many seeds in a sandbox, and returns a verdict with a <b>receipt</b> anyone can re-run: the executed code, the numbers, and the reasoning.</p>
+    <div class="badges">
+      <span class="badge"><b>NVIDIA Nemotron</b> Nano · Super · Ultra</span>
+      <span class="badge"><b>Nebius Token Factory</b> inference</span>
+      <span class="badge"><b>Tavily</b> repo, errata, replications</span>
+      <span class="badge"><b>4 verdicts</b> incl. "inconclusive"</span>
+    </div>
+  </section>
+
+  <h2>Watch it work</h2>
+  <p class="sub">Recorded replays of real runs. Pick a case to replay it. Cases tagged <span class="tag syn">SYNTHETIC</span> are planted-error tests with a known right answer, used to measure the agent honestly.</p>
+  <div class="cases" id="cases"></div>
+
+  <div id="player" class="card" hidden>
+    <div class="stages" id="stages"></div>
+    <div class="seeds" id="seedchips"></div>
+  </div>
+  <div id="verdict"></div>
+
+  <h2>How it works</h2>
+  <div class="steps">
+    <div class="step"><span class="m">Nemotron Super</span><b>1. Extract the claim</b><small>Reads the paper and picks the headline number that can actually be re-run.</small></div>
+    <div class="step"><span class="m">Tavily</span><b>2. Find code, data, errata</b><small>Searches for the repo, datasets, corrections and prior replication attempts. Nano filters out pages that only mention the paper.</small></div>
+    <div class="step"><span class="m">Nemotron Super</span><b>3. Write the reproduction</b><small>Generates a script that runs the repo's own evaluation, and repairs it if the first run breaks. Scripts that hard-code the claimed number are rejected.</small></div>
+    <div class="step"><span class="m">Sandbox containers</span><b>4. Run many seeds in parallel</b><small>Each seed runs in a locked-down container (capabilities dropped, resource limits). Same image works as a Nebius Serverless Job.</small></div>
+    <div class="step"><span class="m">Statistics</span><b>5. Decide honestly</b><small>Compares the claim with the distribution over seeds. If runs break, the verdict is inconclusive, never an accusation. A shrunken run can never count against a paper.</small></div>
+    <div class="step"><span class="m">Nano + Ultra</span><b>6. Explain the gap</b><small>Nano summarises logs. Ultra classifies why a number differs (leakage, metric, hyperparameters...) using the computed variants as evidence.</small></div>
+  </div>
+
+  <div id="benchbox"></div>
+
+  <h2>Run it yourself</h2>
+  <pre>python -m receipts run https://arxiv.org/abs/XXXX.XXXXX --runner docker --seeds 10
+python -m receipts bench bench/planted.json --seeds 8
+python -m receipts verify out/receipt-&lt;id&gt;.json   # re-executes a receipt, checks its hash</pre>
+  <footer id="foot"></footer>
+</main>
+
+<script>
+const DATA = __RECEIPTS_DATA__;
+const $ = s => document.querySelector(s);
+const LABEL = {reproduced:["REPRODUCED","var(--green)","#1f9d55"],partially_reproduced:["PARTIALLY REPRODUCED","var(--amber)","#d9a400"],
+               discrepancy_found:["DISCREPANCY FOUND","var(--red)","#d6336c"],inconclusive:["INCONCLUSIVE","var(--grey)","#6b7280"]};
+const STAGES = [["ingest","Read paper"],["claims","Claims"],["discover","Repo + evidence"],["codegen","Write code"],
+                ["run","Run seeds"],["analyze","Verdict"],["summarize","Summarise"],["diagnose","Diagnose"],["receipt","Receipt"]];
+let token = 0;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function el(tag, props = {}, ...kids){
+  const e = document.createElement(tag);
+  Object.assign(e, props);
+  for (const k of kids) e.append(k);
+  return e;
+}
+const fmt = (x, n = 2) => (x === null || x === undefined) ? "-" : Number(x).toFixed(n);
+
+function labelOf(r){ return LABEL[r.verdict.verdict] || [r.verdict.verdict, "var(--grey)", "#6b7280"]; }
+
+function shortLine(r){
+  const st = r.verdict.stats;
+  return st && st.n ? "claimed " + fmt(r.claim.value, 1) + " vs reproduced " + fmt(st.mean, 1) : "claimed " + fmt(r.claim.value, 1) + "; no number produced";
+}
+
+function buildCases(){
+  const box = $("#cases");
+  const rank = {discrepancy_found: 0, partially_reproduced: 1, reproduced: 2, inconclusive: 3};
+  const order = [...DATA.receipts].sort((a, b) => (a.synthetic_demo - b.synthetic_demo) ||
+    ((rank[a.verdict.verdict] ?? 9) - (rank[b.verdict.verdict] ?? 9)) || String(a.paper.title).localeCompare(String(b.paper.title)));
+  for (const r of order){
+    const [label, , hex] = labelOf(r);
+    const dot = el("span", {className: "vdot"}); dot.style.background = hex;
+    const b = el("button", {className: "case", type: "button", id: "case-" + r.receipt_id},
+      el("span", {className: "tag " + (r.synthetic_demo ? "syn" : "real"), textContent: r.synthetic_demo ? "SYNTHETIC" : "REAL PAPER"}),
+      el("b", {textContent: r.paper.title}),
+      el("small", {}, dot, document.createTextNode(label.toLowerCase())),
+      el("small", {textContent: shortLine(r)}));
+    b.onclick = () => play(r);
+    box.append(b);
+  }
+  return order;
+}
+
+function eventsFor(r){
+  const ev = [], runs = r.runs || [], st = r.verdict.stats, d = r.diagnosis;
+  ev.push(["ingest", "done", "Reading: " + r.paper.title]);
+  ev.push(["claims", "done", "Claim: " + (r.claim.metric || "") + " = " + fmt(r.claim.value, 1) + (r.claim.unit || "")]);
+  const nev = (r.evidence || []).length;
+  ev.push(["discover", "done", r.repo && r.repo.url ? "Repo " + r.repo.url + "; " + nev + " evidence links" :
+           (r.synthetic_demo ? "Synthetic case: bundled code, no search needed" : "No public repo found")]);
+  if (r.script && r.script.code) ev.push(["codegen", "done", "Reproduction script ready (" + r.script.code.split("\n").length + " lines)"]);
+  if (runs.length){
+    ev.push(["run", "start", "Running " + runs.length + " seeds on " + (r.infra && r.infra.backend || "sandbox")]);
+    for (const x of runs) ev.push(["seed", "start", "", x]);
+    for (const x of runs) ev.push(["seed", "done", "", x]);
+    ev.push(["run", "done", (st.n) + "/" + runs.length + " runs produced a number"]);
+  }
+  ev.push(["analyze", "done", "Verdict: " + labelOf(r)[0].toLowerCase()]);
+  ev.push(["summarize", "done", "Logs summarised"]);
+  if (d) ev.push(["diagnose", "done", "Cause: " + String(d.category).replaceAll("_", " ")]);
+  ev.push(["receipt", "done", "Receipt written"]);
+  return ev;
+}
+
+function setStage(stage, status, msg){
+  const row = $("#st-" + stage); if (!row) return;
+  row.className = "stage " + status;
+  if (msg) row.querySelector(".msg").textContent = msg;
+}
+
+function chip(seed){
+  let c = $("#seed-" + seed);
+  if (!c){ c = el("span", {id: "seed-" + seed, className: "chip"}); $("#seedchips").append(c); }
+  return c;
+}
+
+async function play(r){
+  const my = ++token;
+  document.querySelectorAll(".case").forEach(c => c.classList.toggle("sel", c.id === "case-" + r.receipt_id));
+  $("#player").hidden = false;
+  const box = $("#stages"); box.replaceChildren();
+  for (const [id, name] of STAGES)
+    box.append(el("div", {className: "stage", id: "st-" + id}, el("span", {className: "dot"}), el("span", {className: "name", textContent: name}), el("span", {className: "msg"})));
+  $("#seedchips").replaceChildren(); $("#verdict").replaceChildren();
+  for (const [stage, status, msg, x] of eventsFor(r)){
+    if (my !== token) return;
+    if (stage === "seed"){
+      const c = chip(x.seed);
+      if (status === "start"){ c.className = "chip run"; c.textContent = "seed " + x.seed + " …"; await sleep(90); }
+      else { c.className = "chip " + (x.ok ? "ok" : "bad"); c.textContent = "seed " + x.seed + ": " + (x.ok ? fmt(x.value) : "failed"); await sleep(140); }
+      continue;
+    }
+    setStage(stage, "start", msg); await sleep(260);
+    if (my !== token) return;
+    setStage(stage, status === "start" ? "start" : "done", msg);
+  }
+  if (my === token) showReceipt(r);
+}
+
+function gauge(claimed, st){
+  const W = 720, lo0 = Math.min(claimed, st.min), hi0 = Math.max(claimed, st.max);
+  const pad = Math.max((hi0 - lo0) * .25, 1), lo = lo0 - pad, hi = hi0 + pad;
+  const x = v => 20 + (v - lo) / (hi - lo) * (W - 40);
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg"); svg.setAttribute("viewBox", "0 0 " + W + " 96"); svg.style.width = "100%";
+  const add = (tag, attrs, text) => { const n = document.createElementNS(ns, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (text) n.textContent = text; svg.append(n); };
+  add("line", {x1: 20, y1: 58, x2: W - 20, y2: 58, stroke: "#4b5563", "stroke-width": 2});
+  add("rect", {x: x(st.min), y: 44, width: Math.max(x(st.max) - x(st.min), 3), height: 28, rx: 4, fill: "#3b82f6", opacity: .35});
+  if (st.ci95) add("rect", {x: x(st.ci95[0]), y: 49, width: Math.max(x(st.ci95[1]) - x(st.ci95[0]), 3), height: 18, rx: 3, fill: "#3b82f6", opacity: .85});
+  add("line", {x1: x(st.mean), y1: 40, x2: x(st.mean), y2: 76, stroke: "#fff", "stroke-width": 3});
+  add("text", {x: x(st.mean), y: 92, fill: "#e5e7eb", "font-size": 13, "text-anchor": "middle"}, "reproduced mean " + st.mean.toFixed(1));
+  add("line", {x1: x(claimed), y1: 16, x2: x(claimed), y2: 76, stroke: "#f43f5e", "stroke-width": 3, "stroke-dasharray": "5 3"});
+  add("text", {x: x(claimed), y: 12, fill: "#fda4af", "font-size": 13, "text-anchor": "middle"}, "claimed " + claimed.toFixed(1));
+  return svg;
+}
+
+function showReceipt(r){
+  const v = r.verdict, st = v.stats, [label, color] = labelOf(r);
+  const box = $("#verdict"); box.replaceChildren();
+  const banner = el("div", {className: "banner"});
+  banner.style.background = "color-mix(in srgb, " + color + " 14%, transparent)"; banner.style.borderColor = color;
+  const vv = el("div", {className: "v", textContent: label}); vv.style.color = color;
+  banner.append(vv);
+  banner.append(el("div", {className: "cmp", textContent: st.n
+    ? "claimed " + fmt(r.claim.value) + "  vs  reproduced " + fmt(st.mean) + " ± " + fmt(st.std) + "  (" + st.n + " of " + r.seeds_requested + " runs, range " + fmt(st.min) + "–" + fmt(st.max) + ")"
+    : "no run produced a number"}));
+  if (v.reason) banner.append(el("div", {className: "muted", textContent: v.reason}));
+  if (st.n) banner.append(gauge(r.claim.value, st));
+  if (r.synthetic_demo) banner.append(el("div", {className: "synthetic", textContent: "Synthetic case: a planted-error test with a known answer, not a real paper."}));
+  box.append(banner);
+
+  box.append(el("div", {className: "card"}, el("h3", {textContent: "Claim under test"}), el("div", {textContent: r.claim.statement}),
+    el("div", {className: "muted", textContent: [r.claim.metric, r.claim.dataset, r.claim.where].filter(Boolean).join(" · ")})));
+
+  if (r.diagnosis){
+    const dg = r.diagnosis;
+    const c = el("div", {className: "card"}, el("h3", {textContent: v.verdict === "inconclusive" ? "Why this is inconclusive" : "Why it differs"}),
+      el("div", {}, el("b", {textContent: String(dg.category).replaceAll("_", " ")}),
+        el("span", {className: "muted", textContent: "  confidence " + dg.confidence + " · " + dg.source})),
+      el("p", {textContent: dg.explanation}));
+    if (dg.evidence && dg.evidence.length){ const ul = el("ul"); for (const b of dg.evidence) ul.append(el("li", {textContent: String(b)})); c.append(ul); }
+    if (dg.suggested_check) c.append(el("div", {className: "muted", textContent: "Suggested check: " + dg.suggested_check}));
+    box.append(c);
+  }
+  if (!r.synthetic_demo){
+    const ul = el("ul");
+    for (const e of (r.evidence || [])){
+      const li = el("li");
+      li.append(el("b", {textContent: e.kind + ": "}), el("a", {href: e.url, target: "_blank", rel: "noopener", textContent: e.title || e.url}));
+      if (e.why) li.append(el("span", {className: "muted", textContent: "  " + e.why}));
+      ul.append(li);
+    }
+    if (!(r.evidence || []).length) ul.append(el("li", {className: "muted", textContent: "No errata or replication reports found for this paper."}));
+    box.append(el("div", {className: "card"}, el("h3", {textContent: "Evidence found by Tavily (filtered by Nemotron Nano)"}), ul));
+  }
+  box.append(el("div", {className: "card"}, el("h3", {textContent: "The receipt"}),
+    el("a", {href: "receipts/receipt-" + r.receipt_id + ".html", textContent: "Open the full receipt (executed code, per-seed numbers, logs)"}),
+    document.createTextNode("   "),
+    el("a", {href: "receipts/receipt-" + r.receipt_id + ".json", textContent: "receipt.json"}),
+    el("div", {className: "muted", textContent: "Re-run it anywhere: python -m receipts verify receipt-" + r.receipt_id + ".json"})));
+}
+
+function buildBench(){
+  const b = DATA.bench; if (!b) return;
+  const box = $("#benchbox");
+  box.append(el("h2", {textContent: "Measured honestly: the planted-error benchmark"}));
+  box.append(el("p", {className: "sub", textContent: "Eight cases with known answers: four planted bugs, one mild overstatement, two clean controls and one case with proprietary data that must come out inconclusive."}));
+  const k = el("div", {className: "kpis"});
+  const names = {"detection_rate_(planted_errors_flagged)": "Planted errors detected", "false_accusations_(clean_cases_flagged)": "Clean cases wrongly flagged",
+                 "diagnosis_accuracy": "Cause named correctly", "agreement_with_labels": "Verdicts matching the known answer"};
+  for (const key in names){
+    if (b.summary[key] === undefined || b.summary[key] === "n/a") continue;
+    k.append(el("div", {className: "kpi"}, el("div", {className: "n", textContent: b.summary[key]}), el("small", {textContent: names[key]})));
+  }
+  box.append(k);
+  const t = el("table"); t.append(el("tr", {}, ...["case", "known answer", "agent said", "match"].map(h => el("th", {textContent: h}))));
+  for (const row of b.rows){
+    t.append(el("tr", {}, el("td", {textContent: (row.note ? row.note + " (" + row.input + ")" : row.input)}), el("td", {textContent: String(row.expected).replaceAll("_", " ")}),
+      el("td", {textContent: String(row.got).replaceAll("_", " ")}), el("td", {textContent: row.match ? "yes" : "NO"})));
+  }
+  box.append(el("div", {className: "card"}, t));
+  if (DATA.bench_note) box.append(el("p", {className: "muted", textContent: DATA.bench_note}));
+}
+
+function init(){
+  const order = buildCases();
+  buildBench();
+  const foot = $("#foot");
+  foot.append(document.createTextNode("Generated " + DATA.generated + ". "));
+  if (DATA.repo) foot.append(el("a", {href: DATA.repo, textContent: "Source code"}), document.createTextNode(". "));
+  foot.append(document.createTextNode("Receipts shows what it could verify and what it could not. A discrepancy is a finding under stated conditions, never an accusation."));
+  const first = order.find(r => r.verdict.verdict === "discrepancy_found" && !r.synthetic_demo) || order.find(r => r.verdict.verdict === "discrepancy_found") || order[0];
+  if (first) play(first);
+}
+init();
+</script>
+</body>
+</html>

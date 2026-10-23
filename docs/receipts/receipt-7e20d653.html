@@ -1,0 +1,116 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Receipt 7e20d653</title><style>
+body{background:#0b0f17;color:#e5e7eb;font:15px/1.55 system-ui,sans-serif;margin:0}
+main{max-width:920px;margin:0 auto;padding:28px 18px 80px}
+h1{font-size:20px;margin:0 0 4px} h2{font-size:16px;margin:28px 0 8px;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em}
+.banner{border-radius:12px;padding:18px 20px;margin:18px 0;background:#6b728022;border:1px solid #6b7280}
+.banner .v{font-size:26px;font-weight:800;color:#6b7280;letter-spacing:.02em}
+.muted{color:#9ca3af} a{color:#93c5fd} table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{border-bottom:1px solid #1f2937;padding:6px 8px;text-align:left;vertical-align:top}
+pre{background:#111827;border:1px solid #1f2937;border-radius:8px;padding:12px;overflow:auto;font-size:12.5px}
+.synthetic{background:#78350f;color:#fde68a;padding:10px 14px;border-radius:8px;margin:14px 0;font-weight:600}
+code{background:#111827;padding:2px 6px;border-radius:4px} summary{cursor:pointer;color:#9ca3af}
+</style></head><body><main>
+<h1>Receipt <code>7e20d653</code></h1>
+<div class="muted">2026-10-23T22:49:59+00:00 · integrity hash <code>57ec3f4c68fc39a0…</code></div>
+<div class="synthetic">SYNTHETIC DEMO CASE: this is a bundled example, not a real paper, and no real authors are implicated.</div>
+<h2>Paper</h2><div><b>Clinical-notes classifier: 91.3% macro-F1 (proprietary data)</b><br><span class="muted"></span></div>
+<h2>Claim under test</h2><div>Classifier reaches 91.3% macro-F1 on the clinical-notes test set.<br><span class="muted">macro-F1 (%) · proprietary clinical notes · Table 3</span></div>
+<div class="banner"><div class="v">INCONCLUSIVE</div><div>claimed <b>91.30</b>; no run produced a number</div><div class="muted">only 0 of 8 runs produced a number (need at least 4)</div></div>
+<h2>Why this is inconclusive</h2>
+<div><b>data unavailable</b> <span class="muted">(confidence 0.98; source: nemotron-ultra)</span></div>
+<p>All 8 reproduction runs failed with a FileNotFoundError because the script requires the proprietary dataset at `/data/proprietary/clinical_notes_v3.parquet`, which was not present in the reproduction environment. The log summaries consistently identify the missing proprietary data file as the root cause, and no numerical results were produced. Since the dataset is not publicly distributed, the claimed 91.3% macro-F1 cannot be verified or refuted under the current conditions.</p>
+<ul><li>All 8 seeds report &#x27;script failed&#x27; with error &#x27;FileNotFoundError&#x27; for `/data/proprietary/clinical_notes_v3.parquet`.</li><li>Log summaries state: &#x27;The root cause is the missing proprietary data file.&#x27;</li><li>Verdict notes &#x27;only 0 of 8 runs produced a number (need at least 4)&#x27;.</li><li>The reproduction script explicitly loads the path from `PAPER_DATASET_PATH` defaulting to the missing proprietary file.</li></ul><div class="muted">Suggested check: Obtain authorized access to the proprietary clinical-notes dataset (version v3) and re-run the reproduction script with the correct data path.</div>
+<h2>Per-seed runs</h2><table><tr><th>seed</th><th>status</th><th>value</th><th>extras</th><th>time</th><th>job</th><th>summary</th></tr><tr><td>0</td><td>failed</td><td>-</td><td>{}</td><td>1.9s</td><td>receipts-7e20d653-s0-95791486</td><td>The job attempted to load `/data/proprietary/clinical_notes_v3.parquet` using a Python script, but the file was not found, causing a `FileNotFoundError` and an exit code 1. No numerical result was produced. The failure root cause is the missing proprietary data file.</td></tr><tr><td>1</td><td>failed</td><td>-</td><td>{}</td><td>1.4s</td><td>receipts-7e20d653-s1-95791486</td><td>The reproduction script tried to open `/data/proprietary/clinical_notes_v3.parquet` but the file was not present, raising a FileNotFoundError. This caused the process to exit with code 1 after 0.02 seconds, and no numerical result was produced. The root cause is the missing proprietary data file.</td></tr><tr><td>2</td><td>failed</td><td>-</td><td>{}</td><td>1.7s</td><td>receipts-7e20d653-s2-95791487</td><td>Job FAILED. The script attempted to load `/data/proprietary/clinical_notes_v3.parquet` but the file was not found, causing a `FileNotFoundError`. No numerical result was produced. The root cause is the missing proprietary data file.</td></tr><tr><td>3</td><td>failed</td><td>-</td><td>{}</td><td>1.9s</td><td>receipts-7e20d653-s3-95791487</td><td>script failed</td></tr><tr><td>4</td><td>failed</td><td>-</td><td>{}</td><td>1.6s</td><td>receipts-7e20d653-s4-95791487</td><td>script failed</td></tr><tr><td>5</td><td>failed</td><td>-</td><td>{}</td><td>1.5s</td><td>receipts-7e20d653-s5-95791487</td><td>script failed</td></tr><tr><td>6</td><td>failed</td><td>-</td><td>{}</td><td>1.9s</td><td>receipts-7e20d653-s6-95791487</td><td>script failed</td></tr><tr><td>7</td><td>failed</td><td>-</td><td>{}</td><td>1.6s</td><td>receipts-7e20d653-s7-95791488</td><td>script failed</td></tr></table>
+<h2>Web evidence (Tavily)</h2><ul><li class="muted">No errata or replication reports found for this paper (or search not configured).</li></ul>
+<h2>Executed code</h2><div class="muted">sha256 1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237 · requirements: none</div>
+<pre>&quot;&quot;&quot;Reproduction of: &quot;Clinical-notes classifier reaches 91.3% macro-F1&quot; (synthetic example).
+The paper&#x27;s dataset is proprietary and not distributed with the code.&quot;&quot;&quot;
+import json, os
+seed = int(os.environ.get(&quot;SEED&quot;, &quot;0&quot;))
+path = os.environ.get(&quot;PAPER_DATASET_PATH&quot;, &quot;/data/proprietary/clinical_notes_v3.parquet&quot;)
+print(f&quot;seed={seed} loading {path}&quot;)
+with open(path, &quot;rb&quot;) as f:   # raises FileNotFoundError: the data is not public
+    data = f.read()
+print(&quot;RECEIPTS_RESULT &quot; + json.dumps({&quot;metric&quot;: &quot;macro-F1 (%)&quot;, &quot;value&quot;: 0.0, &quot;extras&quot;: {}}))
+</pre>
+<h2>Environment</h2><table>
+<tr><td>repo</td><td>None @ None</td></tr>
+<tr><td>backend / image / platform</td><td>docker / talhaarif7/receipts-sandbox:latest / docker-local</td></tr>
+<tr><td>job-seconds / wall-seconds / est. cost</td><td>13.4 / 7.8 / $0.0000</td></tr>
+<tr><td>models</td><td>{&quot;nano&quot;: &quot;nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B&quot;, &quot;super&quot;: &quot;nvidia/nemotron-3-super-120b-a12b&quot;, &quot;ultra&quot;: &quot;nvidia/Nemotron-3-Ultra-550b-a55b&quot;}</td></tr></table>
+<h2>Re-run this receipt</h2><pre>python -m receipts verify receipt-7e20d653.json</pre>
+<h2>Raw logs</h2><details><summary>seed 0 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237&quot;, &quot;seed&quot;: 0}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=0 loading /data/proprietary/clinical_notes_v3.parquet
+RECEIPTS_META {&quot;exit_code&quot;: 1, &quot;run_seconds&quot;: 0.03}
+Traceback (most recent call last):
+  File &quot;/tmp/receipts-jrmddgkc/repro.py&quot;, line 7, in &lt;module&gt;
+    with open(path, &quot;rb&quot;) as f:   # raises FileNotFoundError: the data is not public
+         ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: &#x27;/data/proprietary/clinical_notes_v3.parquet&#x27;
+</pre></details><details><summary>seed 1 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237&quot;, &quot;seed&quot;: 1}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=1 loading /data/proprietary/clinical_notes_v3.parquet
+RECEIPTS_META {&quot;exit_code&quot;: 1, &quot;run_seconds&quot;: 0.02}
+Traceback (most recent call last):
+  File &quot;/tmp/receipts-8by4hf5u/repro.py&quot;, line 7, in &lt;module&gt;
+    with open(path, &quot;rb&quot;) as f:   # raises FileNotFoundError: the data is not public
+         ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: &#x27;/data/proprietary/clinical_notes_v3.parquet&#x27;
+</pre></details><details><summary>seed 2 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237&quot;, &quot;seed&quot;: 2}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=2 loading /data/proprietary/clinical_notes_v3.parquet
+RECEIPTS_META {&quot;exit_code&quot;: 1, &quot;run_seconds&quot;: 0.03}
+Traceback (most recent call last):
+  File &quot;/tmp/receipts-las4l2a2/repro.py&quot;, line 7, in &lt;module&gt;
+    with open(path, &quot;rb&quot;) as f:   # raises FileNotFoundError: the data is not public
+         ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: &#x27;/data/proprietary/clinical_notes_v3.parquet&#x27;
+</pre></details><details><summary>seed 3 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237&quot;, &quot;seed&quot;: 3}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=3 loading /data/proprietary/clinical_notes_v3.parquet
+RECEIPTS_META {&quot;exit_code&quot;: 1, &quot;run_seconds&quot;: 0.03}
+Traceback (most recent call last):
+  File &quot;/tmp/receipts-ld5x4aum/repro.py&quot;, line 7, in &lt;module&gt;
+    with open(path, &quot;rb&quot;) as f:   # raises FileNotFoundError: the data is not public
+         ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: &#x27;/data/proprietary/clinical_notes_v3.parquet&#x27;
+</pre></details><details><summary>seed 4 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237&quot;, &quot;seed&quot;: 4}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=4 loading /data/proprietary/clinical_notes_v3.parquet
+RECEIPTS_META {&quot;exit_code&quot;: 1, &quot;run_seconds&quot;: 0.03}
+Traceback (most recent call last):
+  File &quot;/tmp/receipts-rki0_4ch/repro.py&quot;, line 7, in &lt;module&gt;
+    with open(path, &quot;rb&quot;) as f:   # raises FileNotFoundError: the data is not public
+         ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: &#x27;/data/proprietary/clinical_notes_v3.parquet&#x27;
+</pre></details><details><summary>seed 5 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237&quot;, &quot;seed&quot;: 5}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=5 loading /data/proprietary/clinical_notes_v3.parquet
+RECEIPTS_META {&quot;exit_code&quot;: 1, &quot;run_seconds&quot;: 0.03}
+Traceback (most recent call last):
+  File &quot;/tmp/receipts-k9pwf079/repro.py&quot;, line 7, in &lt;module&gt;
+    with open(path, &quot;rb&quot;) as f:   # raises FileNotFoundError: the data is not public
+         ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: &#x27;/data/proprietary/clinical_notes_v3.parquet&#x27;
+</pre></details><details><summary>seed 6 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237&quot;, &quot;seed&quot;: 6}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=6 loading /data/proprietary/clinical_notes_v3.parquet
+RECEIPTS_META {&quot;exit_code&quot;: 1, &quot;run_seconds&quot;: 0.03}
+Traceback (most recent call last):
+  File &quot;/tmp/receipts-olkfvpi4/repro.py&quot;, line 7, in &lt;module&gt;
+    with open(path, &quot;rb&quot;) as f:   # raises FileNotFoundError: the data is not public
+         ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: &#x27;/data/proprietary/clinical_notes_v3.parquet&#x27;
+</pre></details><details><summary>seed 7 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;1312bcadb59d385b24dcc84de23bceecc6aed2250c9a5b66160aeb7c9ce24237&quot;, &quot;seed&quot;: 7}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=7 loading /data/proprietary/clinical_notes_v3.parquet
+RECEIPTS_META {&quot;exit_code&quot;: 1, &quot;run_seconds&quot;: 0.03}
+Traceback (most recent call last):
+  File &quot;/tmp/receipts-zb5955f_/repro.py&quot;, line 7, in &lt;module&gt;
+    with open(path, &quot;rb&quot;) as f:   # raises FileNotFoundError: the data is not public
+         ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: &#x27;/data/proprietary/clinical_notes_v3.parquet&#x27;
+</pre></details>
+</main></body></html>

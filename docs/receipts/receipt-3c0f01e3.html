@@ -1,0 +1,92 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Receipt 3c0f01e3</title><style>
+body{background:#0b0f17;color:#e5e7eb;font:15px/1.55 system-ui,sans-serif;margin:0}
+main{max-width:920px;margin:0 auto;padding:28px 18px 80px}
+h1{font-size:20px;margin:0 0 4px} h2{font-size:16px;margin:28px 0 8px;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em}
+.banner{border-radius:12px;padding:18px 20px;margin:18px 0;background:#1f9d5522;border:1px solid #1f9d55}
+.banner .v{font-size:26px;font-weight:800;color:#1f9d55;letter-spacing:.02em}
+.muted{color:#9ca3af} a{color:#93c5fd} table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{border-bottom:1px solid #1f2937;padding:6px 8px;text-align:left;vertical-align:top}
+pre{background:#111827;border:1px solid #1f2937;border-radius:8px;padding:12px;overflow:auto;font-size:12.5px}
+.synthetic{background:#78350f;color:#fde68a;padding:10px 14px;border-radius:8px;margin:14px 0;font-weight:600}
+code{background:#111827;padding:2px 6px;border-radius:4px} summary{cursor:pointer;color:#9ca3af}
+</style></head><body><main>
+<h1>Receipt <code>3c0f01e3</code></h1>
+<div class="muted">2026-10-23T22:49:42+00:00 · integrity hash <code>247d3e47c1940ff4…</code></div>
+<div class="synthetic">SYNTHETIC DEMO CASE: this is a bundled example, not a real paper, and no real authors are implicated.</div>
+<h2>Paper</h2><div><b>Standardised logistic regression on handwritten digits: 96.9% CV accuracy</b><br><span class="muted"></span></div>
+<h2>Claim under test</h2><div>Standardised logistic regression reaches 96.9% 5-fold CV accuracy on digits.<br><span class="muted">5-fold CV accuracy (%) · scikit-learn digits · Table 1</span></div>
+<div class="banner"><div class="v">REPRODUCED</div><div>claimed <b>96.90</b> vs reproduced <b>96.86</b> (±0.23 over 8 of 8 runs)</div><div class="muted"></div><svg viewBox="0 0 720 90" width="100%" role="img" aria-label="claimed vs reproduced"><line x1="20" y1="55" x2="700" y2="55" stroke="#4b5563" stroke-width="2"/><rect x="269.7" y="42" width="180.6" height="26" rx="4" fill="#3b82f6" opacity=".35"/><rect x="311.3" y="46" width="97.7" height="18" rx="3" fill="#3b82f6" opacity=".8"/><line x1="360.1" y1="38" x2="360.1" y2="72" stroke="#fff" stroke-width="3"/><text x="360.1" y="88" fill="#e5e7eb" font-size="13" text-anchor="middle">reproduced mean 96.9</text><line x1="371.1" y1="14" x2="371.1" y2="72" stroke="#f43f5e" stroke-width="3" stroke-dasharray="5 3"/><text x="371.1" y="11" fill="#fda4af" font-size="13" text-anchor="middle">claimed 96.9</text></svg></div>
+<h2>Why does it differ?</h2>
+<div><b>n/a</b> <span class="muted">(confidence -; source: -)</span></div>
+<p>No diagnosis was needed: the claim reproduced.</p>
+<ul></ul><div class="muted">Suggested check: -</div>
+<h2>Per-seed runs</h2><table><tr><th>seed</th><th>status</th><th>value</th><th>extras</th><th>time</th><th>job</th><th>summary</th></tr><tr><td>0</td><td>ok</td><td>96.940</td><td>{}</td><td>3.4s</td><td>receipts-3c0f01e3-s0-95776440</td><td>The job completed successfully. The 5‑fold cross‑validation accuracy was 96.94 %. No failure occurred, so there is no root cause to report.</td></tr><tr><td>1</td><td>ok</td><td>96.494</td><td>{}</td><td>3.4s</td><td>receipts-3c0f01e3-s1-95776440</td><td></td></tr><tr><td>2</td><td>ok</td><td>96.938</td><td>{}</td><td>3.3s</td><td>receipts-3c0f01e3-s2-95776441</td><td></td></tr><tr><td>3</td><td>ok</td><td>97.217</td><td>{}</td><td>2.9s</td><td>receipts-3c0f01e3-s3-95776441</td><td></td></tr><tr><td>4</td><td>ok</td><td>96.829</td><td>{}</td><td>3.0s</td><td>receipts-3c0f01e3-s4-95776441</td><td></td></tr><tr><td>5</td><td>ok</td><td>96.773</td><td>{}</td><td>2.7s</td><td>receipts-3c0f01e3-s5-95776441</td><td></td></tr><tr><td>6</td><td>ok</td><td>97.051</td><td>{}</td><td>3.1s</td><td>receipts-3c0f01e3-s6-95776442</td><td></td></tr><tr><td>7</td><td>ok</td><td>96.606</td><td>{}</td><td>3.3s</td><td>receipts-3c0f01e3-s7-95776442</td><td></td></tr></table>
+<h2>Web evidence (Tavily)</h2><ul><li class="muted">No errata or replication reports found for this paper (or search not configured).</li></ul>
+<h2>Executed code</h2><div class="muted">sha256 daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216 · requirements: numpy, scikit-learn</div>
+<pre>&quot;&quot;&quot;Reproduction of: &quot;Standardised logistic regression reaches 96.9% 5-fold CV accuracy on
+handwritten digits&quot; (synthetic example, scikit-learn digits).&quot;&quot;&quot;
+import json, os
+import numpy as np
+from sklearn.datasets import load_digits
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import StratifiedKFold, cross_val_score
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+seed = int(os.environ.get(&quot;SEED&quot;, &quot;0&quot;))
+X, y = load_digits(return_X_y=True)
+cv = StratifiedKFold(5, shuffle=True, random_state=seed)
+pipe = make_pipeline(StandardScaler(), LogisticRegression(max_iter=5000))
+acc = float(np.mean(cross_val_score(pipe, X, y, cv=cv))) * 100
+print(f&quot;seed={seed} 5-fold CV accuracy = {acc:.2f}&quot;)
+print(&quot;RECEIPTS_RESULT &quot; + json.dumps({&quot;metric&quot;: &quot;5-fold CV accuracy (%)&quot;, &quot;value&quot;: round(acc, 3), &quot;extras&quot;: {}}))
+</pre>
+<h2>Environment</h2><table>
+<tr><td>repo</td><td>None @ None</td></tr>
+<tr><td>backend / image / platform</td><td>docker / talhaarif7/receipts-sandbox:latest / docker-local</td></tr>
+<tr><td>job-seconds / wall-seconds / est. cost</td><td>25.1 / 6.1 / $0.0000</td></tr>
+<tr><td>models</td><td>{&quot;nano&quot;: &quot;nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B&quot;, &quot;super&quot;: &quot;nvidia/nemotron-3-super-120b-a12b&quot;, &quot;ultra&quot;: &quot;nvidia/Nemotron-3-Ultra-550b-a55b&quot;}</td></tr></table>
+<h2>Re-run this receipt</h2><pre>python -m receipts verify receipt-3c0f01e3.json</pre>
+<h2>Raw logs</h2><details><summary>seed 0 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216&quot;, &quot;seed&quot;: 0}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=0 5-fold CV accuracy = 96.94
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;5-fold CV accuracy (%)&quot;, &quot;value&quot;: 96.94, &quot;extras&quot;: {}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 1.77}
+</pre></details><details><summary>seed 1 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216&quot;, &quot;seed&quot;: 1}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=1 5-fold CV accuracy = 96.49
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;5-fold CV accuracy (%)&quot;, &quot;value&quot;: 96.494, &quot;extras&quot;: {}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 1.77}
+</pre></details><details><summary>seed 2 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216&quot;, &quot;seed&quot;: 2}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=2 5-fold CV accuracy = 96.94
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;5-fold CV accuracy (%)&quot;, &quot;value&quot;: 96.938, &quot;extras&quot;: {}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 1.67}
+</pre></details><details><summary>seed 3 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216&quot;, &quot;seed&quot;: 3}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=3 5-fold CV accuracy = 97.22
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;5-fold CV accuracy (%)&quot;, &quot;value&quot;: 97.217, &quot;extras&quot;: {}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 1.62}
+</pre></details><details><summary>seed 4 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216&quot;, &quot;seed&quot;: 4}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=4 5-fold CV accuracy = 96.83
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;5-fold CV accuracy (%)&quot;, &quot;value&quot;: 96.829, &quot;extras&quot;: {}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 1.62}
+</pre></details><details><summary>seed 5 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216&quot;, &quot;seed&quot;: 5}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=5 5-fold CV accuracy = 96.77
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;5-fold CV accuracy (%)&quot;, &quot;value&quot;: 96.773, &quot;extras&quot;: {}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 1.62}
+</pre></details><details><summary>seed 6 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216&quot;, &quot;seed&quot;: 6}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=6 5-fold CV accuracy = 97.05
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;5-fold CV accuracy (%)&quot;, &quot;value&quot;: 97.051, &quot;extras&quot;: {}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 1.67}
+</pre></details><details><summary>seed 7 log</summary><pre>RECEIPTS_META {&quot;python&quot;: &quot;3.11.10&quot;, &quot;script_sha256&quot;: &quot;daaea05658a04dbbbaa10d2276ec96c615860ca509a48075f0d13b837412b216&quot;, &quot;seed&quot;: 7}
+RECEIPTS_META {&quot;network_isolated&quot;: false}
+seed=7 5-fold CV accuracy = 96.61
+RECEIPTS_RESULT {&quot;metric&quot;: &quot;5-fold CV accuracy (%)&quot;, &quot;value&quot;: 96.606, &quot;extras&quot;: {}}
+RECEIPTS_META {&quot;exit_code&quot;: 0, &quot;run_seconds&quot;: 1.72}
+</pre></details>
+</main></body></html>
