@@ -258,6 +258,14 @@ class DockerRunner:
         from shutil import which
         return which("docker") is not None
 
+    @staticmethod
+    def daemon_running() -> bool:
+        try:
+            return subprocess.run(["docker", "info", "--format", "{{.ServerVersion}}"], capture_output=True,
+                                  text=True, timeout=30).returncode == 0
+        except Exception:
+            return False
+
     def _inspect_image(self) -> str:
         if self._image_id is None:
             try:
@@ -295,8 +303,11 @@ class DockerRunner:
             return JobResult(spec.seed, False, logs=out, seconds=time.time() - t0, job_id=cname, backend=self.name, error="timeout")
         logs = (p.stdout or "") + (p.stderr or "")
         res = parse_logs(spec.seed, logs, time.time() - t0, cname, self.name, p.returncode == 0)
-        if p.returncode == 125:  # docker itself failed to start the container
+        daemon_down = re.search(r"failed to connect to the docker API|Cannot connect to the Docker daemon|"
+                                r"docker daemon is not running", logs, re.I)
+        if p.returncode == 125 or daemon_down:  # docker itself failed to start the container
             res.ok, res.value = False, None
             res.error = "docker could not start the container: " + logs.strip()[-300:]
+            res.meta["infra_error"] = True  # not the script's fault: do not ask the model to repair it
         res.meta.update(image=self.image, image_id=self._inspect_image(), platform="docker-local")
         return res

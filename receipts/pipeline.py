@@ -74,6 +74,11 @@ class Pipeline:
             claim_hint: str = "") -> dict:
         runner_name = runner or self.s.default_runner
         t_start = time.time()
+        if runner_name == "docker" and DockerRunner.available() and not DockerRunner.daemon_running():
+            # check before spending any model calls on a run that cannot start
+            msg = "the Docker daemon is not running: start Docker Desktop and try again"
+            self.emit("error", "error", msg)
+            return self._finish_failed(user_input, msg, t_start, runner_name)
         self.emit("ingest", "start", f"Reading {user_input}")
         case = demo_cases.get_case(user_input) if user_input.strip().lower().startswith("demo:") else None
         try:
@@ -229,7 +234,7 @@ class Pipeline:
         if not bundled:  # probe one seed first and let Super repair the script if it breaks
             first = self._one(run, self._spec(script, reqs, repo, seeds[0], bundled), claim)
             attempts = 0
-            while not first.ok and attempts < 3:
+            while not first.ok and attempts < 3 and not first.meta.get("infra_error"):
                 attempts += 1
                 fail = summarize.summarize_logs(self.llm, first.logs, False)
                 self.emit("codegen", "start", f"Probe failed ({fail[:140]}). Super is repairing the script (attempt {attempts})")
