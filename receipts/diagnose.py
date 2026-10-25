@@ -92,6 +92,12 @@ def diagnose(llm: LLM, claim: dict, verdict: dict, per_seed: list[dict], summari
         d = offline_diagnosis(claim, verdict, per_seed, summaries)
         d["explanation"] += f" (Ultra call failed: {str(e)[:120]})"
         return d
+    if isinstance(out, list):  # models sometimes wrap the object in a list
+        out = next((x for x in out if isinstance(x, dict)), None)
+    if not isinstance(out, dict):
+        d = offline_diagnosis(claim, verdict, per_seed, summaries)
+        d["explanation"] += " (Ultra returned no usable diagnosis)"
+        return d
     if out.get("category") not in CATEGORIES:
         out["category"] = "cannot_determine"
     out["source"] = "nemotron-ultra"

@@ -43,6 +43,8 @@ def extract_claims(llm: LLM, meta: dict, fulltext: str, hint: str = "") -> dict:
         prompt += f"\nThe user asked to check this specific result; include it and make it the headline: {hint}"
     out = llm.chat_json("super", SYSTEM, prompt,
                         max_tokens=3000, temperature=0.1)
+    if isinstance(out, list):  # a bare list of claims instead of {"claims": [...], "headline": ...}
+        out = {"claims": out}
     claims = []
     for i, c in enumerate(out.get("claims", []), 1):
         try:
