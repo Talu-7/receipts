@@ -105,7 +105,7 @@ class Pipeline:
         self.emit("analyze", "start", "Computing verdict")
         values = [r.value for r in results if r.ok and r.value is not None]
         verdict = stats.decide(claim["value"], values, len(results), tol=tolerance,
-                               higher_is_better=claim.get("higher_is_better", True))
+                               higher_is_better=claim.get("higher_is_better", True), unit=claim.get("unit"))
         for r in results:  # repo/commit pinned by the sandbox
             if r.meta.get("repo_commit") and not repo.get("commit"):
                 repo["commit"] = r.meta["repo_commit"]

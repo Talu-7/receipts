@@ -62,6 +62,16 @@ class TestPlausibility(unittest.TestCase):
     def test_percent_out_of_range_rejected(self):
         self.assertIsNotNone(stats.implausible(140.0, {"metric": "accuracy", "value": 90.0, "unit": "%"}))
 
+    def test_tolerance_scales_with_small_metrics(self):
+        self.assertAlmostEqual(stats.default_tolerance(0.372), 0.00744)
+        self.assertEqual(stats.default_tolerance(94.0, "%"), 1.0)
+        self.assertEqual(stats.default_tolerance(0.9, "%"), 1.0)  # 0.9 percentage points: still 1 point
+        # an MSE 30% worse than claimed must not pass as reproduced
+        v = stats.decide(0.372, [0.48, 0.49, 0.485], 3, higher_is_better=False)
+        self.assertEqual(v["verdict"], stats.DISCREPANCY)
+        v = stats.decide(0.372, [0.3720, 0.3721, 0.3722], 3, higher_is_better=False)
+        self.assertEqual(v["verdict"], stats.REPRODUCED)
+
     def test_implausibly_better_is_inconclusive(self):
         v = stats.decide(0.372, [0.05, 0.05, 0.05], 3, tol=0.01, higher_is_better=False)
         self.assertEqual(v["verdict"], stats.INCONCLUSIVE)

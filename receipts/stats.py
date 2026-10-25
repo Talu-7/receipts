@@ -47,8 +47,16 @@ def implausible(value: float, claim: dict) -> str | None:
     return None
 
 
+def default_tolerance(claimed: float, unit: str | None = None) -> float:
+    """1 point for percentages (and other large-scale numbers); 2% of the claim for small-scale metrics.
+    A flat 1.0 would wave through any MSE of 0.372 between 0 and 1.37."""
+    if (unit or "").strip() == "%" or abs(claimed) >= 10:
+        return max(1.0, 0.01 * abs(claimed))
+    return max(0.02 * abs(claimed), 1e-6)
+
+
 def decide(claimed: float, values: list[float], requested: int, *, tol: float | None = None,
-           higher_is_better: bool = True) -> dict:
+           higher_is_better: bool = True, unit: str | None = None) -> dict:
     """Return verdict + the numbers behind it.
 
     `tol` is an absolute tolerance in the claim's units (default: max(1.0, 1% of the claim)).
@@ -64,7 +72,7 @@ def decide(claimed: float, values: list[float], requested: int, *, tol: float | 
                 "reason": f"only {s['n']} of {requested} runs produced a number (need at least {need})",
                 "claimed_in_range": None, "shortfall": None}
     if tol is None:
-        tol = max(1.0, 0.01 * abs(claimed))
+        tol = default_tolerance(claimed, unit)
     std = s["std"] or 0.0
     shortfall = (claimed - s["mean"]) if higher_is_better else (s["mean"] - claimed)  # >0: worse than claimed
     allowed = max(tol, 2 * std)
