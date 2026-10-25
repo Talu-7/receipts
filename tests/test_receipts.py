@@ -49,6 +49,69 @@ class TestStats(unittest.TestCase):
         self.assertEqual(v["verdict"], stats.REPRODUCED)
 
 
+class TestPlausibility(unittest.TestCase):
+    def test_placeholder_error_metric_rejected(self):
+        claim = {"metric": "MSE", "value": 0.372, "higher_is_better": False}
+        self.assertIsNotNone(stats.implausible(-1.0, claim))
+        self.assertIsNotNone(stats.implausible(float("nan"), claim))
+        self.assertIsNone(stats.implausible(0.38, claim))
+
+    def test_metrics_that_can_be_negative_allowed(self):
+        self.assertIsNone(stats.implausible(-0.2, {"metric": "R2", "value": 0.8}))
+
+    def test_percent_out_of_range_rejected(self):
+        self.assertIsNotNone(stats.implausible(140.0, {"metric": "accuracy", "value": 90.0, "unit": "%"}))
+
+    def test_implausibly_better_is_inconclusive(self):
+        v = stats.decide(0.372, [0.05, 0.05, 0.05], 3, tol=0.01, higher_is_better=False)
+        self.assertEqual(v["verdict"], stats.INCONCLUSIVE)
+        v = stats.decide(0.372, [0.371, 0.374, 0.373], 3, tol=0.01, higher_is_better=False)
+        self.assertEqual(v["verdict"], stats.REPRODUCED)
+
+
+class TestRunScripts(unittest.TestCase):
+    def test_picks_dataset_scripts_best_first(self):
+        from receipts.discover import pick_run_scripts
+        tree = ["README.md", "run_longExp_F.py", "scripts/FITS/etth1.sh", "scripts/FITS/etth1_best.sh",
+                "scripts/FITS/ettm1.sh", "scripts/FITS/weather.sh"]
+        got = pick_run_scripts(tree, "ETTh1")
+        self.assertEqual(got[0], "scripts/FITS/etth1_best.sh")
+        self.assertNotIn("scripts/FITS/ettm1.sh", got)
+        self.assertEqual(pick_run_scripts(tree, ""), [])
+
+
+class TestResultParsing(unittest.TestCase):
+    def test_python_dict_repr_is_accepted(self):
+        from receipts.runner import parse_logs
+        line = "RECEIPTS_RESULT {\"metric\": \"mse\", \"value\": 0.372, \"extras\": {'seed': 0, 'ok': true}}"
+        r = parse_logs(0, line, 1.0, "j", "local", True)
+        self.assertTrue(r.ok)
+        self.assertAlmostEqual(r.value, 0.372)
+
+    def test_garbage_still_fails(self):
+        from receipts.runner import parse_logs
+        self.assertFalse(parse_logs(0, "RECEIPTS_RESULT {not json", 1.0, "j", "local", True).ok)
+
+
+class TestEvidence(unittest.TestCase):
+    def test_paper_is_not_its_own_erratum(self):
+        from receipts.discover import filter_evidence
+        ev = [{"kind": "erratum", "title": "FITS", "url": "https://arxiv.org/abs/2307.03756", "snippet": "erratum"}]
+        self.assertEqual(filter_evidence(None, "FITS", ev, "2307.03756v1"), [])
+
+    def test_readme_bug_notice_found(self):
+        from receipts.discover import readme_notice
+        rd = ("# FITS\n\nIntro text.\n\n## Update\n- We add a notebook for interpretability.\n"
+              "- We found a bug in the test dataloader (drop_last=True); revised results below.\n")
+        notice = readme_notice(rd, "https://github.com/x/y")
+        self.assertIsNotNone(notice)
+        self.assertTrue(notice["snippet"].startswith("We found a bug"))
+        self.assertIsNone(readme_notice("# Plain readme\n\nHow to install.", "https://github.com/x/y"))
+
+    def test_syntax_error_caught_before_running(self):
+        self.assertIn("SyntaxError", codegen.lint_script("print('RECEIPTS_RESULT ' + str(1)))", 0.372))
+
+
 class TestHelpers(unittest.TestCase):
     def test_arxiv_id(self):
         self.assertEqual(parse_arxiv_id("https://arxiv.org/abs/2005.14165v4"), "2005.14165")

@@ -1,0 +1,409 @@
+{
+  "version": 1,
+  "receipt_id": "be73405f",
+  "created_at": "2026-10-24T20:22:29+00:00",
+  "synthetic_demo": false,
+  "input": "https://arxiv.org/abs/2307.03756v1",
+  "paper": {
+    "title": "FITS: Modeling Time Series with $10k$ Parameters",
+    "arxiv_id": "2307.03756",
+    "url": "https://arxiv.org/abs/2307.03756",
+    "abstract": "In this paper, we introduce FITS, a lightweight yet powerful model for time series analysis. Unlike existing models that directly process raw time-domain data, FITS operates on the principle that time series can be manipulated through interpolation in the complex frequency domain. By discarding high-frequency components with negligible impact on time series data, FITS achieves performance comparable to state-of-the-art models for time series forecasting and anomaly detection tasks, while having a remarkably compact size of only approximately $10k$ parameters. Such a lightweight model can be easily trained and deployed in edge devices, creating opportunities for various applications. The code is available in: \\url{https://github.com/VEWOXIC/FITS}"
+  },
+  "claim": {
+    "id": "c1",
+    "statement": "FITS achieves an MSE of 0.372 on the ETTh1 dataset for a forecast horizon of 96.",
+    "metric": "MSE",
+    "value": 0.372,
+    "unit": "",
+    "dataset": "ETTh1",
+    "higher_is_better": false,
+    "where": "Table 1",
+    "tractable": true,
+    "est_gpu_minutes": 10
+  },
+  "claims_all": [
+    {
+      "id": "c1",
+      "statement": "FITS achieves an MSE of 0.372 on the ETTh1 dataset for a forecast horizon of 96.",
+      "metric": "MSE",
+      "value": 0.372,
+      "unit": "",
+      "dataset": "ETTh1",
+      "higher_is_better": false,
+      "where": "Table 1",
+      "tractable": true,
+      "est_gpu_minutes": 10
+    },
+    {
+      "id": "c2",
+      "statement": "FITS achieves an MSE of 0.424 on the ETTh1 dataset for a forecast horizon of 720.",
+      "metric": "MSE",
+      "value": 0.424,
+      "unit": "",
+      "dataset": "ETTh1",
+      "higher_is_better": false,
+      "where": "Table 1",
+      "tractable": true,
+      "est_gpu_minutes": 10
+    },
+    {
+      "id": "c3",
+      "statement": "FITS achieves an MSE of 0.134 on the Electricity dataset for a forecast horizon of 96.",
+      "metric": "MSE",
+      "value": 0.134,
+      "unit": "",
+      "dataset": "Electricity",
+      "higher_is_better": false,
+      "where": "Table 2",
+      "tractable": true,
+      "est_gpu_minutes": 10
+    },
+    {
+      "id": "c4",
+      "statement": "FITS achieves an F1-score of 99.95% on the SMD anomaly detection benchmark.",
+      "metric": "F1-score",
+      "value": 99.95,
+      "unit": "%",
+      "dataset": "SMD",
+      "higher_is_better": true,
+      "where": "Table 6",
+      "tractable": true,
+      "est_gpu_minutes": 5
+    },
+    {
+      "id": "c5",
+      "statement": "FITS achieves an F1-score of 98.9% on the SWaT anomaly detection benchmark.",
+      "metric": "F1-score",
+      "value": 98.9,
+      "unit": "%",
+      "dataset": "SWaT",
+      "higher_is_better": true,
+      "where": "Table 6",
+      "tractable": true,
+      "est_gpu_minutes": 5
+    }
+  ],
+  "repo": {
+    "url": "https://github.com/VEWOXIC/FITS",
+    "commit": "d040bb015b6299da26d879b90dd19c80fb72c160"
+  },
+  "evidence": [
+    {
+      "kind": "erratum",
+      "title": "Authors' notice in the official repository README",
+      "url": "https://github.com/VEWOXIC/FITS",
+      "snippet": "\u26a0 We find a long standing bug in our code which may affect a wide range of research work. Please check the Important Notice section for more information. We have been actively fixing this bug and rerun all our experiments as well as the baseline models we compared with. - We have updated the final r",
+      "why": "the authors report a bug or correction in their own repository"
+    },
+    {
+      "kind": "replication",
+      "title": "Synthetic Series-Symbol Data Generation for Time ...",
+      "url": "https://papers.nips.cc/paper_files/paper/2025/file/0f45ce821121c459398fd03a0ecc6b60-Paper-Conference.pdf",
+      "snippet": "Zhijian Xu, Ailing Zeng, and Qiang Xu. FITS: Modeling time series with $10k$ parameters. In The Twelfth International Conference on Learning Representations, 2024.\n Kun Yi, Jingru Fei, Qi Zhang, Hui He, Shufeng Hao, Defu Lian, and Wei Fan. Filternet: Harnessing fre-quency filters for time series for",
+      "why": "Replication study of the same paper"
+    },
+    {
+      "kind": "replication",
+      "title": "ENHANCING MULTIVARIATE TIME SERIES FORECAST",
+      "url": "https://proceedings.iclr.cc/paper_files/paper/2026/file/7a3284ce53f620d244fca0c79d94c478-Paper-Conference.pdf",
+      "snippet": "Zhijian Xu, Ailing Zeng, and Qiang Xu. FITS: Modeling time series with $10k$ parameters.\nIn The Twelfth International Conference on Learning Representations, 2024. URL https: //openreview.net/forum?id=bWcnvZ3qMb.\nRunze Yang, Longbing Cao, Jianxun Li, and Jie Yang. Variational hierarchical n-beats mo",
+      "why": "Another replication attempt of the paper"
+    },
+    {
+      "kind": "data",
+      "title": "GitHub - cure-lab/TSF-Skeleton \u00b7 GitHub",
+      "url": "https://github.com/cure-lab/TSF-Skeleton",
+      "snippet": "1. Download our example dataset file from here.\n    In this demo, we use the `ETTh1.csv` dataset file under the path `dataset/ETT-data/ETT/` in our provided link.\n2. Put the downloaded dataset file under `datasets/` directory.\n3. Follow the steps in the requirements section to install the dependenci"
+    },
+    {
+      "kind": "data",
+      "title": "GitHub - zhouhaoyi/ETDataset: The Electricity Transformer dataset is collected to support the further investigation on the long sequence forecasting problem. \u00b7 GitHub",
+      "url": "https://github.com/zhouhaoyi/etdataset",
+      "snippet": "We use the `.csv` file format to save the data, a demo of the ETT-small data is illustrated in Figure 3. The first line (8 columns) is the horizontal header and includes \"date\", \"HUFL\", \"HULL\", \"MUFL\", \"MULL\", \"LUFL\", \"LULL\" and \"OT\". The detailed meaning of each column name is shown in the Table 1."
+    },
+    {
+      "kind": "data",
+      "title": "datasetsforecast/datasetsforecast/long_horizon.py at main \u00b7 Nixtla/datasetsforecast \u00b7 GitHub",
+      "url": "https://github.com/Nixtla/datasetsforecast/blob/main/datasetsforecast/long_horizon.py",
+      "snippet": "class ETTh1:\n\n\"\"\"\n\nThe ETTh1 dataset monitors an electricity transformer\n\nfrom a region of a province of China including oil temperature\n\nand variants of load (such as high useful load and high useless load)\n\nfrom July 2016 to July 2018 at an hourly frequency.\n\n\"\"\"\n\nfreq: str = 'H'\n\nname: str = 'ETT"
+    },
+    {
+      "kind": "data",
+      "title": "GitHub - MainakRepositor/Datasets: A bunch of some 200 datasets. You can call it mini-kaggle :) \u00b7 GitHub",
+      "url": "https://github.com/MainakRepositor/Datasets",
+      "snippet": "## Repository files navigation\n\nA bunch of some 200 datasets. You can call it mini-kaggle :)\n\n#### Download multiple data in csv file from here\n\n}' res = requests.get(url, allow_redirects=True) with open('download_file_name.csv','wb') as file: file.write(res.content) download_file_name = pd.read_csv"
+    },
+    {
+      "kind": "code",
+      "title": "GitHub - VEWOXIC/FITS: FITS: Frequency Interpolation Time Series Analysis Baseline \u00b7 GitHub",
+      "url": "https://github.com/VEWOXIC/FITS",
+      "snippet": "## Repository files navigation\n\n# FITS: Modeling Time Series with 10k parameters (ICLR 2024 Spotlight)\n\nThis is the official implementation of FITS. Please run the scripts in scripts\\FITS for results. Scripts without `_best` are for ablation study and grid search for parameters. Scripts with `_best`"
+    },
+    {
+      "kind": "code",
+      "title": "GitHub - Master-PLC/Awesome-TSF-Papers: This repository contains list of papers according to our survey \"Deep Autocorrelation Modeling for Time-series Forecasting: Progress and Prospects\". \u00b7 GitHub",
+      "url": "https://github.com/Master-PLC/Awesome-TSF-Papers",
+      "snippet": "| CycleNet | Cyclenet: Enhancing time series forecasting through modeling periodic patterns | 2024 | NeurIPS | Github |\n| RLinear | An Analysis of Linear Time Series Forecasting Models | 2024 | ICML | Github |\n| TimeMixer | Timemixer: Decomposable multiscale mixing for time series forecasting | 2024"
+    },
+    {
+      "kind": "code",
+      "title": "A::B Prompting Challenge: $10k to prove me wrong! \u00b7 GitHub",
+      "url": "https://gist.github.com/VictorTaelin/8ec1d8a0a3c87af31c25224a1f7e31ec",
+      "snippet": "A# A# B# #A #A\nA# A# ( B# #A ) #A -> \"#A B#\"\nA# A# #A B# #A\nA# ( A# #A ) B# #A -> \"\"\nA# B# #A\nA# ( B# #A ) -> \"#A B#\"\nA# #A B#\n( A# #A ) B# -> \"\"\nB#\n<solution>B#</solution>\n$ python solve.py` [...] I recommend `gpt-4-0314`, `gpt-4-turbo-preview` or `claude-3-opus-20240229`,\nwith `temperature=0.0`. O"
+    },
+    {
+      "kind": "code",
+      "title": "Package model-res-avm \u00b7 GitHub",
+      "url": "https://github.com/orgs/ccao-data/packages/container/package/model-res-avm",
+      "snippet": "| Transaction feature | How transaction feature is used |\n --- |\n| Sale price | The model is trained only on sale prices > $10k. Many sale prices below this amount are, for example, deeded parking spots rather than houses. |\n| Year of sale | Only sales from the last 9 years are used to train the mod"
+    }
+  ],
+  "script": {
+    "code": "import os\nimport sys\nimport subprocess\nimport re\nimport json\n\ndef set_seed(seed: int):\n    import random\n    import numpy as np\n    import torch\n    random.seed(seed)\n    np.random.seed(seed)\n    torch.manual_seed(seed)\n    torch.cuda.manual_seed_all(seed)\n    torch.backends.cudnn.deterministic = True\n    torch.backends.cudnn.benchmark = False\n\ndef apply_bug_fixes():\n    # Fix 1: data_provider/data_factory.py -> set drop_last=False for test\n    factory_path = os.path.join(os.getcwd(), \"data_provider\", \"data_factory.py\")\n    if os.path.isfile(factory_path):\n        with open(factory_path, \"r\") as f:\n            lines = f.readlines()\n        new_lines = []\n        in_test_block = False\n        for line in lines:\n            stripped = line.strip()\n            # Detect start of test flag block\n            if stripped.startswith(\"if flag == 'test':\") or stripped.startswith('if flag == \"test\":'):\n                in_test_block = True\n                new_lines.append(line)\n                continue\n            if in_test_block and stripped.startswith(\"drop_last\"):\n                # Replace drop_last = True with False, keep indentation\n                indent = len(line) - len(line.lstrip())\n                new_lines.append(\" \" * indent + \"drop_last = False\\n\")\n                in_test_block = False  # assume only one line after flag\n                continue\n            # If we encounter another assignment that ends the block, reset flag\n            if in_test_block and (stripped.startswith(\"shuffle_flag\") or stripped.startswith(\"batch_size\") or stripped.startswith(\"freq\")):\n                # still in block, keep line as is\n                new_lines.append(line)\n                continue\n            if in_test_block and not (stripped.startswith(\"shuffle_flag\") or stripped.startswith(\"batch_size\") or stripped.startswith(\"freq\") or stripped.startswith(\"drop_last\")):\n                # likely end of block\n                in_test_block = False\n            new_lines.append(line)\n        # Write back if changed\n        if new_lines != lines:\n            with open(factory_path, \"w\") as f:\n                f.writelines(new_lines)\n            print(\"Patched data_factory.py: set drop_last=False for test\", file=sys.stdout)\n    else:\n        print(\"Warning: data_factory.py not found\", file=sys.stderr)\n\n    # Fix 2: exp/exp_main_F.py -> replace np.array with np.concatenate for preds, trues, inputx\n    exp_path = os.path.join(os.getcwd(), \"exp\", \"exp_main_F.py\")\n    if os.path.isfile(exp_path):\n        with open(exp_path, \"r\") as f:\n            lines = f.readlines()\n        new_lines = []\n        for line in lines:\n            stripped = line.strip()\n            if stripped.startswith(\"preds = np.array(preds)\"):\n                indent = len(line) - len(line.lstrip())\n                new_lines.append(\" \" * indent + \"preds = np.concatenate(preds, axis=0)\\n\")\n            elif stripped.startswith(\"trues = np.array(trues)\"):\n                indent = len(line) - len(line.lstrip())\n                new_lines.append(\" \" * indent + \"trues = np.concatenate(trues, axis=0)\\n\")\n            elif stripped.startswith(\"inputx = np.array(inputx)\"):\n                indent = len(line) - len(line.lstrip())\n                new_lines.append(\" \" * indent + \"inputx = np.concatenate(inputx, axis=0)\\n\")\n            else:\n                new_lines.append(line)\n        if new_lines != lines:\n            with open(exp_path, \"w\") as f:\n                f.writelines(new_lines)\n            print(\"Patched exp/exp_main_F.py: use concatenation for preds/trues/inputx\", file=sys.stdout)\n    else:\n        print(\"Warning: exp/exp_main_F.py not found\", file=sys.stderr)\n\ndef main():\n    seed_str = os.environ.get('SEED')\n    if seed_str is None:\n        print(\"SEED environment variable not set\", file=sys.stderr)\n        sys.exit(1)\n    try:\n        seed = int(seed_str)\n    except ValueError:\n        print(f\"SEED must be integer, got {seed_str}\", file=sys.stderr)\n        sys.exit(1)\n\n    set_seed(seed)\n\n    # Ensure dataset exists\n    dataset_dir = os.path.join(os.getcwd(), \"dataset\")\n    os.makedirs(dataset_dir, exist_ok=True)\n    etth1_path = os.path.join(dataset_dir, \"ETTh1.csv\")\n    if not os.path.isfile(etth1_path):\n        print(\"Downloading ETTh1 dataset...\", file=sys.stdout)\n        import urllib.request\n        url = \"https://raw.githubusercontent.com/zhouhaoyi/ETDataset/main/ETT-small/ETTh1.csv\"\n        try:\n            urllib.request.urlretrieve(url, etth1_path)\n            print(\"Download completed.\", file=sys.stdout)\n        except Exception as e:\n            print(f\"Failed to download dataset: {e}\", file=sys.stderr)\n            sys.exit(1)\n\n    # Apply known bug fixes from the repo's Important Notice\n    apply_bug_fixes()\n\n    # Hyperparameters from scripts/FITS/etth1_best.sh (best config for ETTh1-96)\n    cmd = [\n        sys.executable, \"-u\", \"run_longExp_F.py\",\n        \"--is_training\", \"1\",\n        \"--root_path\", \"./dataset/\",\n        \"--data_path\", \"ETTh1.csv\",\n        \"--model_id\", \"ETTh1_360_96\",\n        \"--model\", \"FITS\",\n        \"--data\", \"ETTh1\",\n        \"--features\", \"M\",\n        \"--seq_len\", \"360\",\n        \"--pred_len\", \"96\",\n        \"--enc_in\", \"7\",\n        \"--des\", \"Exp\",\n        \"--train_mode\", \"1\",\n        \"--H_order\", \"6\",\n        \"--gpu\", \"0\",\n        \"--seed\", str(seed),\n        \"--patience\", \"20\",\n        \"--itr\", \"1\",\n        \"--batch_size\", \"64\",\n        \"--learning_rate\", \"0.0005\"\n    ]\n\n    print(\"Running command:\", \" \".join(cmd), file=sys.stdout)\n    result = subprocess.run(cmd, capture_output=True, text=True)\n\n    output = result.stdout + result.stderr\n    print(\"=== Script output ===\", file=sys.stdout)\n    print(output, file=sys.stdout)\n    print(\"=== End output ===\", file=sys.stdout)\n\n    # Extract MSE value: look for patterns like \"mse: 0.xxxx\" or \"test mse = 0.xxxx\"\n    mse_pattern = re.compile(r\"mse[\\s:=]+([0-9]*\\.?[0-9]+)\", re.IGNORECASE)\n    matches = mse_pattern.findall(output)\n    if not matches:\n        print(\"Could not find MSE in output.\", file=sys.stderr)\n        sys.exit(1)\n    # Take the last match (likely final test)\n    try:\n        mse_val = float(matches[-1])\n    except ValueError:\n        print(f\"Failed to convert MSE value '{matches[-1]}' to float\", file=sys.stderr)\n        sys.exit(1)\n\n    extras = {\n        \"seed_used\": seed,\n        \"command\": \" \".join(cmd)\n    }\n\n    receipt = {\n        \"metric\": \"MSE\",\n        \"value\": mse_val,\n        \"extras\": extras\n    }\n    print(\"RECEIPTS_RESULT \" + json.dumps(receipt))\n\nif __name__ == \"__main__\":\n    main()\n",
+    "requirements": [],
+    "sha256": "ca3058ae4acb5afadac56b31b5547e2ab08b418745d6d621d0efb38d2ec91a17"
+  },
+  "seeds_requested": 5,
+  "runs": [
+    {
+      "seed": 0,
+      "ok": true,
+      "value": 0.3719749450683594,
+      "metric": "MSE",
+      "extras": {
+        "seed_used": 0,
+        "command": "/opt/conda/bin/python -u run_longExp_F.py --is_training 1 --root_path ./dataset/ --data_path ETTh1.csv --model_id ETTh1_360_96 --model FITS --data ETTh1 --features M --seq_len 360 --pred_len 96 --enc_in 7 --des Exp --train_mode 1 --H_order 6 --gpu 0 --seed 0 --patience 20 --itr 1 --batch_size 64 --learning_rate 0.0005"
+      },
+      "seconds": 314.5366094112396,
+      "job_id": "receipts-be73405f-s0-72442623",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "ca3058ae4acb5afadac56b31b5547e2ab08b418745d6d621d0efb38d2ec91a17",
+        "seed": 0,
+        "repo_commit": "d040bb015b6299da26d879b90dd19c80fb72c160",
+        "repo_url": "https://github.com/VEWOXIC/FITS",
+        "kept_preinstalled": [
+          "torch==2.7.0"
+        ],
+        "relaxed_pins": [
+          "thop==0.1.1"
+        ],
+        "repo_requirements": "partly_relaxed",
+        "uninstallable": [],
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 313.53,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:31992e03da0a11e0e7f4dfb1fa1275e3ad1abb2a0a6ae24d3d2acf9355f6251a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "The job executed a full training run of the FITS model on the ETTh1 dataset with early\u2011stopping and then performed testing. The final test metric reported is MSE\u202f=\u202f0.3719749450683594. The process completed successfully (exit_code\u202f0); the only issue was a numpy\u2011save error that did not stop the job, so there is no failure root cause to note.",
+      "logs": "2925044e-05\nEpoch: 34 cost time: 2.8019754886627197\nEpoch: 34, Steps: 63 | Train Loss: 0.3370030 Vali Loss: 0.6787256 Test Loss: 0.3729046\nValidation loss decreased (0.679251 --> 0.678726).  Saving model ...\nUpdating learning rate to 9.201295511778792e-05\nEpoch: 35 cost time: 2.8854005336761475\nEpoch: 35, Steps: 63 | Train Loss: 0.3373198 Vali Loss: 0.6821818 Test Loss: 0.3729399\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 8.74123073618985e-05\nEpoch: 36 cost time: 2.800161123275757\nEpoch: 36, Steps: 63 | Train Loss: 0.3370022 Vali Loss: 0.6810699 Test Loss: 0.3729515\nEarlyStopping counter: 2 out of 20\nUpdating learning rate to 8.304169199380359e-05\nEpoch: 37 cost time: 2.7057411670684814\nEpoch: 37, Steps: 63 | Train Loss: 0.3371374 Vali Loss: 0.6811985 Test Loss: 0.3729458\nEarlyStopping counter: 3 out of 20\nUpdating learning rate to 7.88896073941134e-05\nEpoch: 38 cost time: 2.7898542881011963\nEpoch: 38, Steps: 63 | Train Loss: 0.3373718 Vali Loss: 0.6817686 Test Loss: 0.3730406\nEarlyStopping counter: 4 out of 20\nUpdating learning rate to 7.494512702440772e-05\nEpoch: 39 cost time: 2.6994452476501465\nEpoch: 39, Steps: 63 | Train Loss: 0.3372580 Vali Loss: 0.6793049 Test Loss: 0.3729744\nEarlyStopping counter: 5 out of 20\nUpdating learning rate to 7.119787067318733e-05\nEpoch: 40 cost time: 2.8107404708862305\nEpoch: 40, Steps: 63 | Train Loss: 0.3374613 Vali Loss: 0.6788953 Test Loss: 0.3729779\nEarlyStopping counter: 6 out of 20\nUpdating learning rate to 6.763797713952796e-05\nEpoch: 41 cost time: 2.782327890396118\nEpoch: 41, Steps: 63 | Train Loss: 0.3368449 Vali Loss: 0.6830271 Test Loss: 0.3729636\nEarlyStopping counter: 7 out of 20\nUpdating learning rate to 6.425607828255156e-05\nEpoch: 42 cost time: 2.701432704925537\nEpoch: 42, Steps: 63 | Train Loss: 0.3368842 Vali Loss: 0.6761393 Test Loss: 0.3729758\nValidation loss decreased (0.678726 --> 0.676139).  Saving model ...\nUpdating learning rate to 6.104327436842398e-05\nEpoch: 43 cost time: 2.8895461559295654\nEpoch: 43, Steps: 63 | Train Loss: 0.3373442 Vali Loss: 0.6801025 Test Loss: 0.3729689\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 5.799111065000278e-05\nEpoch: 44 cost time: 2.7988734245300293\nEpoch: 44, Steps: 63 | Train Loss: 0.3371833 Vali Loss: 0.6805274 Test Loss: 0.3730128\nEarlyStopping counter: 2 out of 20\nUpdating learning rate to 5.509155511750264e-05\nEpoch: 45 cost time: 2.7882888317108154\nEpoch: 45, Steps: 63 | Train Loss: 0.3369138 Vali Loss: 0.6801569 Test Loss: 0.3729646\nEarlyStopping counter: 3 out of 20\nUpdating learning rate to 5.2336977361627504e-05\nEpoch: 46 cost time: 2.804109573364258\nEpoch: 46, Steps: 63 | Train Loss: 0.3374528 Vali Loss: 0.6783078 Test Loss: 0.3729520\nEarlyStopping counter: 4 out of 20\nUpdating learning rate to 4.9720128493546124e-05\nEpoch: 47 cost time: 2.609865188598633\nEpoch: 47, Steps: 63 | Train Loss: 0.3372196 Vali Loss: 0.6848665 Test Loss: 0.3729373\nEarlyStopping counter: 5 out of 20\nUpdating learning rate to 4.7234122068868816e-05\nEpoch: 48 cost time: 2.7097911834716797\nEpoch: 48, Steps: 63 | Train Loss: 0.3371566 Vali Loss: 0.6736384 Test Loss: 0.3729379\nValidation loss decreased (0.676139 --> 0.673638).  Saving model ...\nUpdating learning rate to 4.487241596542538e-05\nEpoch: 49 cost time: 2.7097504138946533\nEpoch: 49, Steps: 63 | Train Loss: 0.3372124 Vali Loss: 0.6802896 Test Loss: 0.3729028\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 4.26287951671541e-05\nEpoch: 50 cost time: 2.70089054107666\nEpoch: 50, Steps: 63 | Train Loss: 0.3368972 Vali Loss: 0.6829587 Test Loss: 0.3729554\nEarlyStopping counter: 2 out of 20\nUpdating learning rate to 4.0497355408796396e-05\n>>>>>>>testing : ETTh1_360_96_FITS_ETTh1_ftM_sl360_ll48_pl96_H6_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\ntest 2785\nmse:0.3719749450683594, mae:0.39443206787109375, rse:0.5793148875236511, corr:[0.26855898 0.27840906 0.27828228 0.2795677  0.2770798  0.27482986\n 0.27428135 0.27378285 0.2731099  0.2731909  0.2731299  0.27257785\n 0.27254882 0.27259418 0.27224854 0.2722821  0.27250823 0.272194\n 0.27193663 0.27198267 0.27175686 0.27127284 0.27147922 0.27200776\n 0.27159542 0.27102932 0.27091897 0.27069807 0.2701633  0.2698502\n 0.26961118 0.26900256 0.2685525  0.2685705  0.26854876 0.26825973\n 0.26830167 0.26851985 0.26854116 0.26858816 0.2689764  0.26914757\n 0.26923114 0.2692234  0.26887286 0.2683873  0.26846373 0.26876172\n 0.26836225 0.2673503  0.26653224 0.26605558 0.2652704  0.26408863\n 0.26349878 0.26322648 0.26288426 0.2627625  0.26257566 0.26253542\n 0.26255688 0.26271006 0.26269108 0.26257065 0.2626857  0.26310593\n 0.26345888 0.26328114 0.2630284  0.2631754  0.26341084 0.2632789\n 0.26258495 0.2616626  0.26092905 0.26051834 0.26017943 0.25970846\n 0.25930154 0.2588056  0.2583281  0.25799608 0.25774187 0.25747013\n 0.2573456  0.2575547  0.25768647 0.25726306 0.25715962 0.2574617\n 0.25703168 0.25637797 0.25621483 0.25506592 0.25504237 0.25750852]\nTraceback (most recent call last):\n  File \"/tmp/receipts-rfcaftza/repo/run_longExp_F.py\", line 163, in <module>\n    exp.test(setting)\n  File \"/tmp/receipts-rfcaftza/repo/exp/exp_main_F.py\", line 353, in test\n    np.save(folder_path + 'x.npy', inputx)\n  File \"/opt/conda/lib/python3.11/site-packages/numpy/lib/npyio.py\", line 545, in save\n    arr = np.asanyarray(arr)\n          ^^^^^^^^^^^^^^^^^^\nValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (22,) + inhomogeneous part.\n\n=== End output ===\nRECEIPTS_RESULT {\"metric\": \"MSE\", \"value\": 0.3719749450683594, \"extras\": {\"seed_used\": 0, \"command\": \"/opt/conda/bin/python -u run_longExp_F.py --is_training 1 --root_path ./dataset/ --data_path ETTh1.csv --model_id ETTh1_360_96 --model FITS --data ETTh1 --features M --seq_len 360 --pred_len 96 --enc_in 7 --des Exp --train_mode 1 --H_order 6 --gpu 0 --seed 0 --patience 20 --itr 1 --batch_size 64 --learning_rate 0.0005\"}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 313.53}\n"
+    },
+    {
+      "seed": 1,
+      "ok": true,
+      "value": 0.37206998467445374,
+      "metric": "MSE",
+      "extras": {
+        "seed_used": 1,
+        "command": "/opt/conda/bin/python -u run_longExp_F.py --is_training 1 --root_path ./dataset/ --data_path ETTh1.csv --model_id ETTh1_360_96 --model FITS --data ETTh1 --features M --seq_len 360 --pred_len 96 --enc_in 7 --des Exp --train_mode 1 --H_order 6 --gpu 0 --seed 1 --patience 20 --itr 1 --batch_size 64 --learning_rate 0.0005"
+      },
+      "seconds": 483.8241033554077,
+      "job_id": "receipts-be73405f-s1-72757160",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "ca3058ae4acb5afadac56b31b5547e2ab08b418745d6d621d0efb38d2ec91a17",
+        "seed": 1,
+        "repo_commit": "d040bb015b6299da26d879b90dd19c80fb72c160",
+        "repo_url": "https://github.com/VEWOXIC/FITS",
+        "kept_preinstalled": [
+          "torch==2.7.0"
+        ],
+        "relaxed_pins": [
+          "thop==0.1.1"
+        ],
+        "repo_requirements": "partly_relaxed",
+        "uninstallable": [],
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 482.21,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:31992e03da0a11e0e7f4dfb1fa1275e3ad1abb2a0a6ae24d3d2acf9355f6251a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "arlyStopping counter: 2 out of 20\nUpdating learning rate to 9.685574222925044e-05\nEpoch: 34 cost time: 4.204158544540405\nEpoch: 34, Steps: 63 | Train Loss: 0.3372713 Vali Loss: 0.6828620 Test Loss: 0.3728908\nEarlyStopping counter: 3 out of 20\nUpdating learning rate to 9.201295511778792e-05\nEpoch: 35 cost time: 3.9040753841400146\nEpoch: 35, Steps: 63 | Train Loss: 0.3370201 Vali Loss: 0.6818213 Test Loss: 0.3729394\nEarlyStopping counter: 4 out of 20\nUpdating learning rate to 8.74123073618985e-05\nEpoch: 36 cost time: 4.300012826919556\nEpoch: 36, Steps: 63 | Train Loss: 0.3362130 Vali Loss: 0.6828107 Test Loss: 0.3730138\nEarlyStopping counter: 5 out of 20\nUpdating learning rate to 8.304169199380359e-05\nEpoch: 37 cost time: 4.356306791305542\nEpoch: 37, Steps: 63 | Train Loss: 0.3359756 Vali Loss: 0.6798889 Test Loss: 0.3729424\nEarlyStopping counter: 6 out of 20\nUpdating learning rate to 7.88896073941134e-05\nEpoch: 38 cost time: 4.614021301269531\nEpoch: 38, Steps: 63 | Train Loss: 0.3373246 Vali Loss: 0.6782319 Test Loss: 0.3730057\nEarlyStopping counter: 7 out of 20\nUpdating learning rate to 7.494512702440772e-05\nEpoch: 39 cost time: 4.316016435623169\nEpoch: 39, Steps: 63 | Train Loss: 0.3368914 Vali Loss: 0.6813097 Test Loss: 0.3730106\nEarlyStopping counter: 8 out of 20\nUpdating learning rate to 7.119787067318733e-05\nEpoch: 40 cost time: 5.004647970199585\nEpoch: 40, Steps: 63 | Train Loss: 0.3373204 Vali Loss: 0.6792992 Test Loss: 0.3730087\nEarlyStopping counter: 9 out of 20\nUpdating learning rate to 6.763797713952796e-05\nEpoch: 41 cost time: 4.369681119918823\nEpoch: 41, Steps: 63 | Train Loss: 0.3368939 Vali Loss: 0.6816945 Test Loss: 0.3730495\nEarlyStopping counter: 10 out of 20\nUpdating learning rate to 6.425607828255156e-05\nEpoch: 42 cost time: 4.198510646820068\nEpoch: 42, Steps: 63 | Train Loss: 0.3372256 Vali Loss: 0.6808940 Test Loss: 0.3730058\nEarlyStopping counter: 11 out of 20\nUpdating learning rate to 6.104327436842398e-05\nEpoch: 43 cost time: 3.9877731800079346\nEpoch: 43, Steps: 63 | Train Loss: 0.3364440 Vali Loss: 0.6810086 Test Loss: 0.3730310\nEarlyStopping counter: 12 out of 20\nUpdating learning rate to 5.799111065000278e-05\nEpoch: 44 cost time: 4.598964214324951\nEpoch: 44, Steps: 63 | Train Loss: 0.3369622 Vali Loss: 0.6750079 Test Loss: 0.3730350\nValidation loss decreased (0.677947 --> 0.675008).  Saving model ...\nUpdating learning rate to 5.509155511750264e-05\nEpoch: 45 cost time: 4.198606967926025\nEpoch: 45, Steps: 63 | Train Loss: 0.3373926 Vali Loss: 0.6799017 Test Loss: 0.3730573\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 5.2336977361627504e-05\nEpoch: 46 cost time: 4.402118921279907\nEpoch: 46, Steps: 63 | Train Loss: 0.3368292 Vali Loss: 0.6799483 Test Loss: 0.3729921\nEarlyStopping counter: 2 out of 20\nUpdating learning rate to 4.9720128493546124e-05\nEpoch: 47 cost time: 4.397394895553589\nEpoch: 47, Steps: 63 | Train Loss: 0.3369157 Vali Loss: 0.6830665 Test Loss: 0.3729774\nEarlyStopping counter: 3 out of 20\nUpdating learning rate to 4.7234122068868816e-05\nEpoch: 48 cost time: 4.199753046035767\nEpoch: 48, Steps: 63 | Train Loss: 0.3363394 Vali Loss: 0.6766763 Test Loss: 0.3730123\nEarlyStopping counter: 4 out of 20\nUpdating learning rate to 4.487241596542538e-05\nEpoch: 49 cost time: 4.497954607009888\nEpoch: 49, Steps: 63 | Train Loss: 0.3370836 Vali Loss: 0.6792474 Test Loss: 0.3730154\nEarlyStopping counter: 5 out of 20\nUpdating learning rate to 4.26287951671541e-05\nEpoch: 50 cost time: 3.9527440071105957\nEpoch: 50, Steps: 63 | Train Loss: 0.3365746 Vali Loss: 0.6787696 Test Loss: 0.3730107\nEarlyStopping counter: 6 out of 20\nUpdating learning rate to 4.0497355408796396e-05\n>>>>>>>testing : ETTh1_360_96_FITS_ETTh1_ftM_sl360_ll48_pl96_H6_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\ntest 2785\nmse:0.37206998467445374, mae:0.39451444149017334, rse:0.5793889164924622, corr:[0.26960802 0.276919   0.27759415 0.27968505 0.27705303 0.27473906\n 0.27450365 0.27415055 0.2731435  0.27311605 0.27336207 0.2728035\n 0.27242115 0.27246976 0.27233052 0.27224636 0.27233598 0.27214396\n 0.27185294 0.2716076  0.27138045 0.27118626 0.27144274 0.27185512\n 0.27153802 0.27111483 0.27092695 0.27059966 0.27011514 0.26987886\n 0.2696248  0.26896605 0.2685315  0.26859513 0.26858774 0.26827082\n 0.26830128 0.26850915 0.2684458  0.26842967 0.2689012  0.26914507\n 0.26912123 0.2690257  0.26879767 0.26839828 0.26841214 0.26873967\n 0.26846346 0.26745987 0.26651785 0.26602426 0.26536906 0.26419482\n 0.26344982 0.26312062 0.26286194 0.2627465  0.2624568  0.2624051\n 0.26250675 0.26262867 0.2624784  0.26234066 0.2625819  0.26303136\n 0.2632929  0.26315472 0.2630998  0.2633263  0.26348233 0.26336518\n 0.26278397 0.26183167 0.26097056 0.26054797 0.2602188  0.2596426\n 0.2591734  0.2587388  0.25826263 0.25779316 0.25749123 0.2573695\n 0.25737146 0.25746596 0.25750706 0.25733826 0.25743517 0.2575766\n 0.2571509  0.25680012 0.25649235 0.25527543 0.2555915  0.25733075]\nTraceback (most recent call last):\n  File \"/tmp/receipts-6012ud2s/repo/run_longExp_F.py\", line 163, in <module>\n    exp.test(setting)\n  File \"/tmp/receipts-6012ud2s/repo/exp/exp_main_F.py\", line 353, in test\n    np.save(folder_path + 'x.npy', inputx)\n  File \"/opt/conda/lib/python3.11/site-packages/numpy/lib/npyio.py\", line 545, in save\n    arr = np.asanyarray(arr)\n          ^^^^^^^^^^^^^^^^^^\nValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (22,) + inhomogeneous part.\n\n=== End output ===\nRECEIPTS_RESULT {\"metric\": \"MSE\", \"value\": 0.37206998467445374, \"extras\": {\"seed_used\": 1, \"command\": \"/opt/conda/bin/python -u run_longExp_F.py --is_training 1 --root_path ./dataset/ --data_path ETTh1.csv --model_id ETTh1_360_96 --model FITS --data ETTh1 --features M --seq_len 360 --pred_len 96 --enc_in 7 --des Exp --train_mode 1 --H_order 6 --gpu 0 --seed 1 --patience 20 --itr 1 --batch_size 64 --learning_rate 0.0005\"}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 482.21}\n"
+    },
+    {
+      "seed": 2,
+      "ok": true,
+      "value": 0.37211915850639343,
+      "metric": "MSE",
+      "extras": {
+        "seed_used": 2,
+        "command": "/opt/conda/bin/python -u run_longExp_F.py --is_training 1 --root_path ./dataset/ --data_path ETTh1.csv --model_id ETTh1_360_96 --model FITS --data ETTh1 --features M --seq_len 360 --pred_len 96 --enc_in 7 --des Exp --train_mode 1 --H_order 6 --gpu 0 --seed 2 --patience 20 --itr 1 --batch_size 64 --learning_rate 0.0005"
+      },
+      "seconds": 326.52844190597534,
+      "job_id": "receipts-be73405f-s2-72757160",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "ca3058ae4acb5afadac56b31b5547e2ab08b418745d6d621d0efb38d2ec91a17",
+        "seed": 2,
+        "repo_commit": "d040bb015b6299da26d879b90dd19c80fb72c160",
+        "repo_url": "https://github.com/VEWOXIC/FITS",
+        "kept_preinstalled": [
+          "torch==2.7.0"
+        ],
+        "relaxed_pins": [
+          "thop==0.1.1"
+        ],
+        "repo_requirements": "partly_relaxed",
+        "uninstallable": [],
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 325.02,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:31992e03da0a11e0e7f4dfb1fa1275e3ad1abb2a0a6ae24d3d2acf9355f6251a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "ng learning rate to 9.685574222925044e-05\nEpoch: 34 cost time: 2.9670968055725098\nEpoch: 34, Steps: 63 | Train Loss: 0.3371501 Vali Loss: 0.6804401 Test Loss: 0.3730830\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 9.201295511778792e-05\nEpoch: 35 cost time: 2.8012869358062744\nEpoch: 35, Steps: 63 | Train Loss: 0.3370455 Vali Loss: 0.6771141 Test Loss: 0.3731080\nValidation loss decreased (0.679069 --> 0.677114).  Saving model ...\nUpdating learning rate to 8.74123073618985e-05\nEpoch: 36 cost time: 2.873199939727783\nEpoch: 36, Steps: 63 | Train Loss: 0.3373989 Vali Loss: 0.6838538 Test Loss: 0.3731357\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 8.304169199380359e-05\nEpoch: 37 cost time: 3.0851986408233643\nEpoch: 37, Steps: 63 | Train Loss: 0.3373210 Vali Loss: 0.6842514 Test Loss: 0.3730408\nEarlyStopping counter: 2 out of 20\nUpdating learning rate to 7.88896073941134e-05\nEpoch: 38 cost time: 2.913029432296753\nEpoch: 38, Steps: 63 | Train Loss: 0.3369621 Vali Loss: 0.6823073 Test Loss: 0.3730759\nEarlyStopping counter: 3 out of 20\nUpdating learning rate to 7.494512702440772e-05\nEpoch: 39 cost time: 2.9907894134521484\nEpoch: 39, Steps: 63 | Train Loss: 0.3372097 Vali Loss: 0.6805505 Test Loss: 0.3730213\nEarlyStopping counter: 4 out of 20\nUpdating learning rate to 7.119787067318733e-05\nEpoch: 40 cost time: 3.279933214187622\nEpoch: 40, Steps: 63 | Train Loss: 0.3371720 Vali Loss: 0.6820718 Test Loss: 0.3730566\nEarlyStopping counter: 5 out of 20\nUpdating learning rate to 6.763797713952796e-05\nEpoch: 41 cost time: 3.5075876712799072\nEpoch: 41, Steps: 63 | Train Loss: 0.3372950 Vali Loss: 0.6781072 Test Loss: 0.3730612\nEarlyStopping counter: 6 out of 20\nUpdating learning rate to 6.425607828255156e-05\nEpoch: 42 cost time: 3.1020045280456543\nEpoch: 42, Steps: 63 | Train Loss: 0.3370707 Vali Loss: 0.6805040 Test Loss: 0.3730408\nEarlyStopping counter: 7 out of 20\nUpdating learning rate to 6.104327436842398e-05\nEpoch: 43 cost time: 3.0023818016052246\nEpoch: 43, Steps: 63 | Train Loss: 0.3369860 Vali Loss: 0.6765859 Test Loss: 0.3730713\nValidation loss decreased (0.677114 --> 0.676586).  Saving model ...\nUpdating learning rate to 5.799111065000278e-05\nEpoch: 44 cost time: 3.1127254962921143\nEpoch: 44, Steps: 63 | Train Loss: 0.3367875 Vali Loss: 0.6780345 Test Loss: 0.3730302\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 5.509155511750264e-05\nEpoch: 45 cost time: 3.2110841274261475\nEpoch: 45, Steps: 63 | Train Loss: 0.3370903 Vali Loss: 0.6841779 Test Loss: 0.3730829\nEarlyStopping counter: 2 out of 20\nUpdating learning rate to 5.2336977361627504e-05\nEpoch: 46 cost time: 3.0178592205047607\nEpoch: 46, Steps: 63 | Train Loss: 0.3365619 Vali Loss: 0.6831099 Test Loss: 0.3731177\nEarlyStopping counter: 3 out of 20\nUpdating learning rate to 4.9720128493546124e-05\nEpoch: 47 cost time: 2.8905189037323\nEpoch: 47, Steps: 63 | Train Loss: 0.3371328 Vali Loss: 0.6791917 Test Loss: 0.3731045\nEarlyStopping counter: 4 out of 20\nUpdating learning rate to 4.7234122068868816e-05\nEpoch: 48 cost time: 2.9119207859039307\nEpoch: 48, Steps: 63 | Train Loss: 0.3361146 Vali Loss: 0.6802588 Test Loss: 0.3730462\nEarlyStopping counter: 5 out of 20\nUpdating learning rate to 4.487241596542538e-05\nEpoch: 49 cost time: 2.9911274909973145\nEpoch: 49, Steps: 63 | Train Loss: 0.3368305 Vali Loss: 0.6813918 Test Loss: 0.3730614\nEarlyStopping counter: 6 out of 20\nUpdating learning rate to 4.26287951671541e-05\nEpoch: 50 cost time: 2.796212911605835\nEpoch: 50, Steps: 63 | Train Loss: 0.3370508 Vali Loss: 0.6805047 Test Loss: 0.3730881\nEarlyStopping counter: 7 out of 20\nUpdating learning rate to 4.0497355408796396e-05\n>>>>>>>testing : ETTh1_360_96_FITS_ETTh1_ftM_sl360_ll48_pl96_H6_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\ntest 2785\nmse:0.37211915850639343, mae:0.39456817507743835, rse:0.579427182674408, corr:[0.26938197 0.27770564 0.27786404 0.27966467 0.27715254 0.27482116\n 0.27448148 0.27416226 0.27331278 0.2732499  0.27329248 0.27274036\n 0.27252015 0.27251044 0.2721832  0.27208683 0.27223763 0.27202606\n 0.27179158 0.27168956 0.2714143  0.27104563 0.27135038 0.27190396\n 0.27159438 0.2711672  0.27102327 0.270679   0.27017504 0.27001262\n 0.26978424 0.26904637 0.2685817  0.26869276 0.26864064 0.26820332\n 0.26822814 0.26854143 0.26853678 0.26849473 0.26891539 0.26913655\n 0.26916096 0.26912817 0.26886156 0.26842687 0.26850155 0.26888597\n 0.2686115  0.26758364 0.26663226 0.26609942 0.2653918  0.2642649\n 0.2635953  0.26318404 0.2627665  0.26262525 0.26240155 0.26232323\n 0.26236573 0.26254135 0.26247677 0.26230693 0.26246935 0.26297814\n 0.26337954 0.2632499  0.26308683 0.26330099 0.2635603  0.26347056\n 0.26280186 0.26176888 0.26091328 0.2605129  0.26017874 0.2596246\n 0.25916964 0.25868952 0.2581506  0.2576625  0.25737053 0.25719866\n 0.25712442 0.2572914  0.2574863  0.25733155 0.25741223 0.25761953\n 0.2570701  0.25651118 0.2563545  0.25497958 0.2548711  0.25764096]\nTraceback (most recent call last):\n  File \"/tmp/receipts-r4_g49cs/repo/run_longExp_F.py\", line 163, in <module>\n    exp.test(setting)\n  File \"/tmp/receipts-r4_g49cs/repo/exp/exp_main_F.py\", line 353, in test\n    np.save(folder_path + 'x.npy', inputx)\n  File \"/opt/conda/lib/python3.11/site-packages/numpy/lib/npyio.py\", line 545, in save\n    arr = np.asanyarray(arr)\n          ^^^^^^^^^^^^^^^^^^\nValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (22,) + inhomogeneous part.\n\n=== End output ===\nRECEIPTS_RESULT {\"metric\": \"MSE\", \"value\": 0.37211915850639343, \"extras\": {\"seed_used\": 2, \"command\": \"/opt/conda/bin/python -u run_longExp_F.py --is_training 1 --root_path ./dataset/ --data_path ETTh1.csv --model_id ETTh1_360_96 --model FITS --data ETTh1 --features M --seq_len 360 --pred_len 96 --enc_in 7 --des Exp --train_mode 1 --H_order 6 --gpu 0 --seed 2 --patience 20 --itr 1 --batch_size 64 --learning_rate 0.0005\"}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 325.02}\n"
+    },
+    {
+      "seed": 3,
+      "ok": true,
+      "value": 0.3721080422401428,
+      "metric": "MSE",
+      "extras": {
+        "seed_used": 3,
+        "command": "/opt/conda/bin/python -u run_longExp_F.py --is_training 1 --root_path ./dataset/ --data_path ETTh1.csv --model_id ETTh1_360_96 --model FITS --data ETTh1 --features M --seq_len 360 --pred_len 96 --enc_in 7 --des Exp --train_mode 1 --H_order 6 --gpu 0 --seed 3 --patience 20 --itr 1 --batch_size 64 --learning_rate 0.0005"
+      },
+      "seconds": 589.6951971054077,
+      "job_id": "receipts-be73405f-s3-72757160",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "ca3058ae4acb5afadac56b31b5547e2ab08b418745d6d621d0efb38d2ec91a17",
+        "seed": 3,
+        "repo_commit": "d040bb015b6299da26d879b90dd19c80fb72c160",
+        "repo_url": "https://github.com/VEWOXIC/FITS",
+        "kept_preinstalled": [
+          "torch==2.7.0"
+        ],
+        "relaxed_pins": [
+          "thop==0.1.1"
+        ],
+        "repo_requirements": "partly_relaxed",
+        "uninstallable": [],
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 588.24,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:31992e03da0a11e0e7f4dfb1fa1275e3ad1abb2a0a6ae24d3d2acf9355f6251a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "574222925044e-05\nEpoch: 34 cost time: 6.463890790939331\nEpoch: 34, Steps: 63 | Train Loss: 0.3374166 Vali Loss: 0.6799058 Test Loss: 0.3731643\nValidation loss decreased (0.680278 --> 0.679906).  Saving model ...\nUpdating learning rate to 9.201295511778792e-05\nEpoch: 35 cost time: 6.173354148864746\nEpoch: 35, Steps: 63 | Train Loss: 0.3372212 Vali Loss: 0.6846361 Test Loss: 0.3731775\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 8.74123073618985e-05\nEpoch: 36 cost time: 6.798446416854858\nEpoch: 36, Steps: 63 | Train Loss: 0.3375289 Vali Loss: 0.6795328 Test Loss: 0.3730960\nValidation loss decreased (0.679906 --> 0.679533).  Saving model ...\nUpdating learning rate to 8.304169199380359e-05\nEpoch: 37 cost time: 3.9178760051727295\nEpoch: 37, Steps: 63 | Train Loss: 0.3368158 Vali Loss: 0.6805555 Test Loss: 0.3731659\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 7.88896073941134e-05\nEpoch: 38 cost time: 4.326092004776001\nEpoch: 38, Steps: 63 | Train Loss: 0.3372254 Vali Loss: 0.6844146 Test Loss: 0.3730771\nEarlyStopping counter: 2 out of 20\nUpdating learning rate to 7.494512702440772e-05\nEpoch: 39 cost time: 4.099817991256714\nEpoch: 39, Steps: 63 | Train Loss: 0.3375019 Vali Loss: 0.6814105 Test Loss: 0.3730400\nEarlyStopping counter: 3 out of 20\nUpdating learning rate to 7.119787067318733e-05\nEpoch: 40 cost time: 4.083416700363159\nEpoch: 40, Steps: 63 | Train Loss: 0.3369021 Vali Loss: 0.6813066 Test Loss: 0.3730982\nEarlyStopping counter: 4 out of 20\nUpdating learning rate to 6.763797713952796e-05\nEpoch: 41 cost time: 4.192581415176392\nEpoch: 41, Steps: 63 | Train Loss: 0.3369835 Vali Loss: 0.6815320 Test Loss: 0.3730883\nEarlyStopping counter: 5 out of 20\nUpdating learning rate to 6.425607828255156e-05\nEpoch: 42 cost time: 4.085046768188477\nEpoch: 42, Steps: 63 | Train Loss: 0.3375127 Vali Loss: 0.6806863 Test Loss: 0.3730573\nEarlyStopping counter: 6 out of 20\nUpdating learning rate to 6.104327436842398e-05\nEpoch: 43 cost time: 4.025651693344116\nEpoch: 43, Steps: 63 | Train Loss: 0.3374530 Vali Loss: 0.6819251 Test Loss: 0.3730755\nEarlyStopping counter: 7 out of 20\nUpdating learning rate to 5.799111065000278e-05\nEpoch: 44 cost time: 4.1052634716033936\nEpoch: 44, Steps: 63 | Train Loss: 0.3372907 Vali Loss: 0.6796525 Test Loss: 0.3730564\nEarlyStopping counter: 8 out of 20\nUpdating learning rate to 5.509155511750264e-05\nEpoch: 45 cost time: 4.307239770889282\nEpoch: 45, Steps: 63 | Train Loss: 0.3372452 Vali Loss: 0.6812888 Test Loss: 0.3730687\nEarlyStopping counter: 9 out of 20\nUpdating learning rate to 5.2336977361627504e-05\nEpoch: 46 cost time: 4.386588096618652\nEpoch: 46, Steps: 63 | Train Loss: 0.3368572 Vali Loss: 0.6817069 Test Loss: 0.3730347\nEarlyStopping counter: 10 out of 20\nUpdating learning rate to 4.9720128493546124e-05\nEpoch: 47 cost time: 4.000688076019287\nEpoch: 47, Steps: 63 | Train Loss: 0.3369996 Vali Loss: 0.6811207 Test Loss: 0.3731002\nEarlyStopping counter: 11 out of 20\nUpdating learning rate to 4.7234122068868816e-05\nEpoch: 48 cost time: 4.19633936882019\nEpoch: 48, Steps: 63 | Train Loss: 0.3370550 Vali Loss: 0.6754994 Test Loss: 0.3730619\nValidation loss decreased (0.679533 --> 0.675499).  Saving model ...\nUpdating learning rate to 4.487241596542538e-05\nEpoch: 49 cost time: 4.4838433265686035\nEpoch: 49, Steps: 63 | Train Loss: 0.3368356 Vali Loss: 0.6830878 Test Loss: 0.3730327\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 4.26287951671541e-05\nEpoch: 50 cost time: 4.403411626815796\nEpoch: 50, Steps: 63 | Train Loss: 0.3366518 Vali Loss: 0.6825229 Test Loss: 0.3730783\nEarlyStopping counter: 2 out of 20\nUpdating learning rate to 4.0497355408796396e-05\n>>>>>>>testing : ETTh1_360_96_FITS_ETTh1_ftM_sl360_ll48_pl96_H6_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\ntest 2785\nmse:0.3721080422401428, mae:0.39451566338539124, rse:0.5794185400009155, corr:[0.2692452  0.27726412 0.27789232 0.2795206  0.27692667 0.27480412\n 0.27443144 0.27394944 0.27317992 0.27324727 0.27322626 0.2726508\n 0.27254653 0.2725502  0.27218196 0.27219072 0.2724664  0.27217385\n 0.27181122 0.27178934 0.2717093  0.27137926 0.27150846 0.2719029\n 0.2715686  0.27109438 0.27096304 0.2707429  0.27025676 0.26998988\n 0.26977062 0.26911068 0.26855543 0.26853895 0.26861075 0.26840413\n 0.2684425  0.26863977 0.2686464  0.26866585 0.2690425  0.26921952\n 0.26928294 0.26928553 0.26898745 0.26846388 0.26843336 0.26875645\n 0.26847926 0.26742762 0.2664908  0.26603287 0.2653402  0.2641391\n 0.26343885 0.26306662 0.26266724 0.26251972 0.26236382 0.26236415\n 0.26236647 0.2625123  0.26258212 0.26254624 0.2626495  0.2630297\n 0.2634251  0.26331395 0.26307443 0.26322988 0.2635013  0.26340553\n 0.26269072 0.26168802 0.26088864 0.26046002 0.26012003 0.25961354\n 0.25915834 0.25865895 0.25820863 0.2578441  0.25759158 0.25740576\n 0.25732347 0.2574615  0.25750646 0.2570623  0.25698307 0.25741023\n 0.25701538 0.25619695 0.25608203 0.25523585 0.25520462 0.25791356]\nTraceback (most recent call last):\n  File \"/tmp/receipts-cz1rrq1t/repo/run_longExp_F.py\", line 163, in <module>\n    exp.test(setting)\n  File \"/tmp/receipts-cz1rrq1t/repo/exp/exp_main_F.py\", line 353, in test\n    np.save(folder_path + 'x.npy', inputx)\n  File \"/opt/conda/lib/python3.11/site-packages/numpy/lib/npyio.py\", line 545, in save\n    arr = np.asanyarray(arr)\n          ^^^^^^^^^^^^^^^^^^\nValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (22,) + inhomogeneous part.\n\n=== End output ===\nRECEIPTS_RESULT {\"metric\": \"MSE\", \"value\": 0.3721080422401428, \"extras\": {\"seed_used\": 3, \"command\": \"/opt/conda/bin/python -u run_longExp_F.py --is_training 1 --root_path ./dataset/ --data_path ETTh1.csv --model_id ETTh1_360_96 --model FITS --data ETTh1 --features M --seq_len 360 --pred_len 96 --enc_in 7 --des Exp --train_mode 1 --H_order 6 --gpu 0 --seed 3 --patience 20 --itr 1 --batch_size 64 --learning_rate 0.0005\"}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 588.24}\n"
+    },
+    {
+      "seed": 4,
+      "ok": true,
+      "value": 0.3722357451915741,
+      "metric": "MSE",
+      "extras": {
+        "seed_used": 4,
+        "command": "/opt/conda/bin/python -u run_longExp_F.py --is_training 1 --root_path ./dataset/ --data_path ETTh1.csv --model_id ETTh1_360_96 --model FITS --data ETTh1 --features M --seq_len 360 --pred_len 96 --enc_in 7 --des Exp --train_mode 1 --H_order 6 --gpu 0 --seed 4 --patience 20 --itr 1 --batch_size 64 --learning_rate 0.0005"
+      },
+      "seconds": 585.9085283279419,
+      "job_id": "receipts-be73405f-s4-72757160",
+      "backend": "docker",
+      "meta": {
+        "python": "3.11.10",
+        "script_sha256": "ca3058ae4acb5afadac56b31b5547e2ab08b418745d6d621d0efb38d2ec91a17",
+        "seed": 4,
+        "repo_commit": "d040bb015b6299da26d879b90dd19c80fb72c160",
+        "repo_url": "https://github.com/VEWOXIC/FITS",
+        "kept_preinstalled": [
+          "torch==2.7.0"
+        ],
+        "relaxed_pins": [
+          "thop==0.1.1"
+        ],
+        "repo_requirements": "partly_relaxed",
+        "uninstallable": [],
+        "network_isolated": false,
+        "exit_code": 0,
+        "run_seconds": 584.37,
+        "image": "talhaarif7/receipts-sandbox:latest",
+        "image_id": "sha256:31992e03da0a11e0e7f4dfb1fa1275e3ad1abb2a0a6ae24d3d2acf9355f6251a",
+        "platform": "docker-local"
+      },
+      "error": "",
+      "log_summary": "",
+      "logs": "model ...\nUpdating learning rate to 9.685574222925044e-05\nEpoch: 34 cost time: 6.876508951187134\nEpoch: 34, Steps: 63 | Train Loss: 0.3375947 Vali Loss: 0.6834665 Test Loss: 0.3731998\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 9.201295511778792e-05\nEpoch: 35 cost time: 6.3571507930755615\nEpoch: 35, Steps: 63 | Train Loss: 0.3374067 Vali Loss: 0.6805951 Test Loss: 0.3732190\nEarlyStopping counter: 2 out of 20\nUpdating learning rate to 8.74123073618985e-05\nEpoch: 36 cost time: 7.104607582092285\nEpoch: 36, Steps: 63 | Train Loss: 0.3371262 Vali Loss: 0.6813878 Test Loss: 0.3732171\nEarlyStopping counter: 3 out of 20\nUpdating learning rate to 8.304169199380359e-05\nEpoch: 37 cost time: 4.624170780181885\nEpoch: 37, Steps: 63 | Train Loss: 0.3374215 Vali Loss: 0.6838481 Test Loss: 0.3732080\nEarlyStopping counter: 4 out of 20\nUpdating learning rate to 7.88896073941134e-05\nEpoch: 38 cost time: 4.088986873626709\nEpoch: 38, Steps: 63 | Train Loss: 0.3369819 Vali Loss: 0.6786062 Test Loss: 0.3731774\nValidation loss decreased (0.680410 --> 0.678606).  Saving model ...\nUpdating learning rate to 7.494512702440772e-05\nEpoch: 39 cost time: 4.068104028701782\nEpoch: 39, Steps: 63 | Train Loss: 0.3372866 Vali Loss: 0.6830058 Test Loss: 0.3731826\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 7.119787067318733e-05\nEpoch: 40 cost time: 4.602637052536011\nEpoch: 40, Steps: 63 | Train Loss: 0.3371034 Vali Loss: 0.6820079 Test Loss: 0.3732042\nEarlyStopping counter: 2 out of 20\nUpdating learning rate to 6.763797713952796e-05\nEpoch: 41 cost time: 4.295085668563843\nEpoch: 41, Steps: 63 | Train Loss: 0.3366263 Vali Loss: 0.6797397 Test Loss: 0.3731781\nEarlyStopping counter: 3 out of 20\nUpdating learning rate to 6.425607828255156e-05\nEpoch: 42 cost time: 4.1026904582977295\nEpoch: 42, Steps: 63 | Train Loss: 0.3371195 Vali Loss: 0.6761145 Test Loss: 0.3731885\nValidation loss decreased (0.678606 --> 0.676114).  Saving model ...\nUpdating learning rate to 6.104327436842398e-05\nEpoch: 43 cost time: 3.99043869972229\nEpoch: 43, Steps: 63 | Train Loss: 0.3367191 Vali Loss: 0.6810454 Test Loss: 0.3731571\nEarlyStopping counter: 1 out of 20\nUpdating learning rate to 5.799111065000278e-05\nEpoch: 44 cost time: 4.386214733123779\nEpoch: 44, Steps: 63 | Train Loss: 0.3374774 Vali Loss: 0.6812519 Test Loss: 0.3731482\nEarlyStopping counter: 2 out of 20\nUpdating learning rate to 5.509155511750264e-05\nEpoch: 45 cost time: 4.313246011734009\nEpoch: 45, Steps: 63 | Train Loss: 0.3370033 Vali Loss: 0.6811306 Test Loss: 0.3731152\nEarlyStopping counter: 3 out of 20\nUpdating learning rate to 5.2336977361627504e-05\nEpoch: 46 cost time: 4.132468223571777\nEpoch: 46, Steps: 63 | Train Loss: 0.3374058 Vali Loss: 0.6819226 Test Loss: 0.3731264\nEarlyStopping counter: 4 out of 20\nUpdating learning rate to 4.9720128493546124e-05\nEpoch: 47 cost time: 4.3052818775177\nEpoch: 47, Steps: 63 | Train Loss: 0.3368663 Vali Loss: 0.6810946 Test Loss: 0.3731399\nEarlyStopping counter: 5 out of 20\nUpdating learning rate to 4.7234122068868816e-05\nEpoch: 48 cost time: 3.936551809310913\nEpoch: 48, Steps: 63 | Train Loss: 0.3368346 Vali Loss: 0.6773618 Test Loss: 0.3731548\nEarlyStopping counter: 6 out of 20\nUpdating learning rate to 4.487241596542538e-05\nEpoch: 49 cost time: 4.106863260269165\nEpoch: 49, Steps: 63 | Train Loss: 0.3367048 Vali Loss: 0.6782777 Test Loss: 0.3731848\nEarlyStopping counter: 7 out of 20\nUpdating learning rate to 4.26287951671541e-05\nEpoch: 50 cost time: 3.997471809387207\nEpoch: 50, Steps: 63 | Train Loss: 0.3369301 Vali Loss: 0.6778572 Test Loss: 0.3731727\nEarlyStopping counter: 8 out of 20\nUpdating learning rate to 4.0497355408796396e-05\n>>>>>>>testing : ETTh1_360_96_FITS_ETTh1_ftM_sl360_ll48_pl96_H6_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\ntest 2785\nmse:0.3722357451915741, mae:0.3946946859359741, rse:0.5795179605484009, corr:[0.26893473 0.27769354 0.2779591  0.27958232 0.27696103 0.27478358\n 0.274436   0.2739995  0.2732093  0.27319235 0.27313232 0.2725326\n 0.2723483  0.27232036 0.2720227  0.2721039  0.2723242  0.27200672\n 0.27174634 0.2717601  0.27156168 0.27120143 0.2715341  0.27214593\n 0.27176526 0.27116957 0.27102026 0.27086002 0.27042824 0.2701369\n 0.2698383  0.26912478 0.26856884 0.2685564  0.2686069  0.26836848\n 0.26838034 0.26855183 0.2685307  0.2685444  0.26897693 0.2692671\n 0.26940957 0.2693426  0.26893798 0.26847538 0.26860577 0.26890245\n 0.26842564 0.26734665 0.26646692 0.2659444  0.26520061 0.26410517\n 0.26348206 0.26303217 0.26258406 0.26255247 0.26244596 0.26234725\n 0.26231682 0.2625246  0.26254725 0.2624155  0.26257136 0.26308078\n 0.26348126 0.26333553 0.26317427 0.26342222 0.26366007 0.26345327\n 0.26268265 0.2616882  0.26086918 0.26037654 0.2599913  0.25945872\n 0.25893924 0.25839132 0.25802597 0.25781918 0.25761655 0.257427\n 0.25740218 0.2575838  0.25761896 0.25724405 0.2573012  0.25760826\n 0.25704935 0.2564477  0.25621536 0.2544386  0.2545299  0.25746   ]\nTraceback (most recent call last):\n  File \"/tmp/receipts-y0fq_hrd/repo/run_longExp_F.py\", line 163, in <module>\n    exp.test(setting)\n  File \"/tmp/receipts-y0fq_hrd/repo/exp/exp_main_F.py\", line 353, in test\n    np.save(folder_path + 'x.npy', inputx)\n  File \"/opt/conda/lib/python3.11/site-packages/numpy/lib/npyio.py\", line 545, in save\n    arr = np.asanyarray(arr)\n          ^^^^^^^^^^^^^^^^^^\nValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (22,) + inhomogeneous part.\n\n=== End output ===\nRECEIPTS_RESULT {\"metric\": \"MSE\", \"value\": 0.3722357451915741, \"extras\": {\"seed_used\": 4, \"command\": \"/opt/conda/bin/python -u run_longExp_F.py --is_training 1 --root_path ./dataset/ --data_path ETTh1.csv --model_id ETTh1_360_96 --model FITS --data ETTh1 --features M --seq_len 360 --pred_len 96 --enc_in 7 --des Exp --train_mode 1 --H_order 6 --gpu 0 --seed 4 --patience 20 --itr 1 --batch_size 64 --learning_rate 0.0005\"}}\nRECEIPTS_META {\"exit_code\": 0, \"run_seconds\": 584.37}\n"
+    }
+  ],
+  "verdict": {
+    "verdict": "reproduced",
+    "claimed": 0.372,
+    "stats": {
+      "n": 5,
+      "mean": 0.3721015751361847,
+      "std": 9.405548024240564e-05,
+      "min": 0.3719749450683594,
+      "max": 0.3722357451915741,
+      "ci95": [
+        0.3719848085549447,
+        0.3722183417174247
+      ]
+    },
+    "tolerance": 1.0,
+    "allowed_gap": 1.0,
+    "partial_gap": 3.0,
+    "shortfall": 0.00010157513618469505,
+    "claimed_in_range": true,
+    "reason": "",
+    "higher_is_better": false
+  },
+  "diagnosis": null,
+  "infra": {
+    "backend": "docker",
+    "image": "talhaarif7/receipts-sandbox:latest",
+    "platform": "docker-local",
+    "job_seconds": 2300.4928801059723,
+    "wall_seconds": 1078.1402306556702,
+    "est_cost_usd": 0,
+    "models": {
+      "nano": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+      "super": "nvidia/nemotron-3-super-120b-a12b",
+      "ultra": "nvidia/Nemotron-3-Ultra-550b-a55b"
+    },
+    "llm_usage": {
+      "nano": {
+        "calls": 4,
+        "prompt_tokens": 6323,
+        "completion_tokens": 1737
+      },
+      "super": {
+        "calls": 5,
+        "prompt_tokens": 55653,
+        "completion_tokens": 11426
+      },
+      "ultra": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0
+      }
+    }
+  },
+  "sha256": "a7e500ce5114f743fa66368654fbd65fc4a2d3f2f7ba4d44332c6b9d3feaadf5"
+}

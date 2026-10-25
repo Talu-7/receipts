@@ -32,7 +32,7 @@ def build(out_dir: str = "out", site_dir: str = "docs", repo_url: str = "") -> d
     receipts = []
     for p in sorted(out.glob("receipt-*.json")):
         try:
-            r = json.loads(p.read_text())
+            r = json.loads(p.read_text(encoding="utf-8"))
         except ValueError:
             continue
         if r.get("verdict") and r.get("claim"):
@@ -61,7 +61,7 @@ def build(out_dir: str = "out", site_dir: str = "docs", repo_url: str = "") -> d
     bj = out / "bench.json"
     if bj.exists():
         try:
-            bench = json.loads(bj.read_text())
+            bench = json.loads(bj.read_text(encoding="utf-8"))
         except ValueError:
             bench = None
     note = None
@@ -74,7 +74,7 @@ def build(out_dir: str = "out", site_dir: str = "docs", repo_url: str = "") -> d
     data = {"receipts": [_public(r) for _, r in chosen], "bench": bench, "bench_note": note, "repo": repo_url,
             "generated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}
     payload = json.dumps(data, default=str).replace("</", "<\\/")
-    html = TEMPLATE.read_text().replace("__RECEIPTS_DATA__", payload)
-    (site / "index.html").write_text(html)
-    (site / ".nojekyll").write_text("")
+    html = TEMPLATE.read_text(encoding="utf-8").replace("__RECEIPTS_DATA__", payload)
+    (site / "index.html").write_text(html, encoding="utf-8")
+    (site / ".nojekyll").write_text("", encoding="utf-8")
     return {"receipts": len(chosen), "site": str(site), "bench": bool(bench)}

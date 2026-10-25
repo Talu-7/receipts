@@ -20,7 +20,8 @@ def cmd_run(a) -> int:
     s = Settings.load()
     if a.out:
         s.out_dir = a.out
-    rec = Pipeline(s, emit=show).run(a.input, seeds=a.seeds, runner=a.runner, tolerance=a.tolerance)
+    rec = Pipeline(s, emit=show).run(a.input, seeds=a.seeds, runner=a.runner, tolerance=a.tolerance,
+                                         claim_hint=a.claim)
     v = rec["verdict"]
     print()
     print(f"{ICON.get(v['verdict'], '')}  {v['verdict'].upper().replace('_', ' ')}")
@@ -44,7 +45,7 @@ def cmd_verify(a) -> int:
     from .runner import JobSpec, LocalRunner
     from .receipt import canonical_hash
 
-    rec = json.load(open(a.receipt))
+    rec = json.load(open(a.receipt, encoding="utf-8"))
     if rec.get("sha256") and canonical_hash(rec) != rec["sha256"]:
         print("!! integrity hash mismatch: this receipt file was modified after it was written")
         return 2
@@ -72,7 +73,7 @@ def cmd_bench(a) -> int:
     from .pipeline import Pipeline
     from pathlib import Path
 
-    items = json.load(open(a.papers))
+    items = json.load(open(a.papers, encoding="utf-8"))
     s = Settings.load()
     s.out_dir = a.out or s.out_dir
     rows = []
@@ -106,8 +107,8 @@ def cmd_bench(a) -> int:
     }
     out = Path(s.out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    (out / "bench.json").write_text(json.dumps({"summary": summary, "rows": rows}, indent=2))
-    (out / "bench.md").write_text("\n".join(md) + "\n\n" + "\n".join(f"- **{k}**: {v}" for k, v in summary.items()) + "\n")
+    (out / "bench.json").write_text(json.dumps({"summary": summary, "rows": rows}, indent=2), encoding="utf-8")
+    (out / "bench.md").write_text("\n".join(md) + "\n\n" + "\n".join(f"- **{k}**: {v}" for k, v in summary.items()) + "\n", encoding="utf-8")
     print("\n" + "\n".join(f"{k}: {v}" for k, v in summary.items()))
     print(f"report: {out / 'bench.md'}")
     return 0
@@ -195,6 +196,7 @@ def main(argv=None) -> int:
     r.add_argument("--seeds", type=int, default=10)
     r.add_argument("--runner", choices=["local", "docker", "nebius"], default=None)
     r.add_argument("--tolerance", type=float, default=None, help="absolute tolerance in the claim's units")
+    r.add_argument("--claim", default="", help="which result to check, e.g. \"ETTh1 MSE, horizon 96\" (default: the headline)")
     r.add_argument("--out", default=None)
     r.set_defaults(fn=cmd_run)
     sv = sub.add_parser("serve", help="web UI")
@@ -226,6 +228,9 @@ def main(argv=None) -> int:
     d.add_argument("--job", action="store_true", help="also run a tiny smoke job on Nebius")
     d.set_defaults(fn=cmd_doctor)
     a = p.parse_args(argv)
+    for stream in (sys.stdout, sys.stderr):  # Windows consoles default to cp1252 and choke on the verdict icons
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     return a.fn(a)
 
 

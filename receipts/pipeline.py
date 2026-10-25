@@ -11,7 +11,7 @@ from typing import Callable
 
 from . import arxiv_src, claims as claims_mod, codegen, demo_cases, diagnose as diag_mod, receipt, stats, summarize
 from .config import Settings
-from .discover import discover, filter_evidence, repo_context
+from .discover import discover, filter_evidence, readme_notice, repo_context
 from .llm import LLM
 from .runner import DockerRunner, JobResult, JobSpec, LocalRunner, NebiusRunner
 from .search import Tavily
@@ -70,7 +70,8 @@ class Pipeline:
         self._emit({"t": time.time(), "run_id": self.run_id, "stage": stage, "status": status, "msg": msg, "data": data})
 
     # ------------------------------------------------------------------ main entry
-    def run(self, user_input: str, seeds: int = 10, runner: str | None = None, tolerance: float | None = None) -> dict:
+    def run(self, user_input: str, seeds: int = 10, runner: str | None = None, tolerance: float | None = None,
+            claim_hint: str = "") -> dict:
         runner_name = runner or self.s.default_runner
         t_start = time.time()
         self.emit("ingest", "start", f"Reading {user_input}")
@@ -87,7 +88,7 @@ class Pipeline:
                 self.emit("discover", "done", "Synthetic case: no repo/errata search needed")
                 self.emit("codegen", "done", "Using the bundled reproduction script")
             else:
-                paper, claim, all_claims, repo, evidence, script, reqs = self._prepare_real(user_input)
+                paper, claim, all_claims, repo, evidence, script, reqs = self._prepare_real(user_input, claim_hint)
                 bundled = False
         except Exception as e:  # always return a receipt, never a stack trace
             self.emit("error", "error", f"{type(e).__name__}: {e}")
@@ -151,7 +152,7 @@ class Pipeline:
         return rec
 
     # ------------------------------------------------------------------ real-paper preparation
-    def _prepare_real(self, user_input: str):
+    def _prepare_real(self, user_input: str, claim_hint: str = ""):
         if not self.llm.available:
             raise RuntimeError("real papers need NEBIUS_API_KEY (Nemotron). Try a bundled case: demo:leakage, demo:reproduces, demo:broken")
         aid = arxiv_src.parse_arxiv_id(user_input)
@@ -163,7 +164,7 @@ class Pipeline:
         self._partial = {"paper": {"title": meta["title"], "arxiv_id": aid, "url": meta["url"], "abstract": meta["abstract"]}}
 
         self.emit("claims", "start", "Nemotron Super: extracting claims")
-        cl = claims_mod.extract_claims(self.llm, meta, text)
+        cl = claims_mod.extract_claims(self.llm, meta, text, hint=claim_hint)
         claim = cl["headline"]
         self.emit("claims", "done", f"Headline: {claim['statement']}", claim=claim, claims=cl["claims"])
         self._partial.update(claim=claim, claims=cl["claims"])
@@ -179,13 +180,17 @@ class Pipeline:
                 f"Raise RECEIPTS_MAX_GPU_MIN to override.")
 
         self.emit("discover", "start", "Tavily: repo, datasets, errata, prior replications")
-        disc = discover(self.search, meta, text)
+        disc = discover(self.search, meta, text, claim.get("dataset") or "")
         # Tavily returns generic pages; keep only results that really report an erratum or a replication.
-        disc["evidence"] = filter_evidence(self.llm, meta["title"], disc["evidence"])
+        disc["evidence"] = filter_evidence(self.llm, meta["title"], disc["evidence"], aid)
         self._partial["evidence"] = disc["evidence"]
         if not disc["repo_url"]:
             raise RuntimeError("no public code repository found for this paper (searched the paper text and the web)")
-        ctx = repo_context(disc["repo_url"])
+        ctx = repo_context(disc["repo_url"], claim.get("dataset") or "")
+        notice = readme_notice(ctx.get("readme", ""), disc["repo_url"])
+        if notice:
+            disc["evidence"].insert(0, notice)
+        ctx["data_links"] = [e["url"] for e in disc["evidence"] if e["kind"] == "data"][:4]
         repo = {"url": disc["repo_url"], "commit": ctx.get("commit")}
         self.emit("discover", "done", f"Repo {disc['repo_url']}; {len(disc['evidence'])} evidence links", repo=repo, evidence=disc["evidence"])
 
@@ -204,9 +209,13 @@ class Pipeline:
                        # parallel CPU demo jobs must not each grab every core (thread oversubscription made them 10x slower)
                        env={"OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1"} if bundled else {})
 
-    def _one(self, run, spec: JobSpec) -> JobResult:
+    def _one(self, run, spec: JobSpec, claim: dict | None = None) -> JobResult:
         self.emit("run", "start", f"seed {spec.seed}: started", seed=spec.seed)
         res = run.run(spec)
+        bad = stats.implausible(res.value, claim) if (res.ok and claim) else None
+        if bad:  # a placeholder is a failed run, so the repair loop gets to fix the script
+            res.ok, res.error, res.meta["rejected_value"] = False, f"rejected value: {bad}", res.value
+            res.value = None
         self.emit("run", "done" if res.ok else "warn",
                   f"seed {spec.seed}: {res.value:.3f}" if res.ok else f"seed {spec.seed}: failed ({res.error})",
                   seed=spec.seed, ok=res.ok, value=res.value, seconds=res.seconds, extras=res.extras)
@@ -218,9 +227,9 @@ class Pipeline:
         self.emit("run", "start", f"Running {n_seeds} seeds on {run.name} (parallelism {par})", seeds=n_seeds, backend=run.name)
         results: list[JobResult] = []
         if not bundled:  # probe one seed first and let Super repair the script if it breaks
-            first = self._one(run, self._spec(script, reqs, repo, seeds[0], bundled))
+            first = self._one(run, self._spec(script, reqs, repo, seeds[0], bundled), claim)
             attempts = 0
-            while not first.ok and attempts < 2:
+            while not first.ok and attempts < 3:
                 attempts += 1
                 fail = summarize.summarize_logs(self.llm, first.logs, False)
                 self.emit("codegen", "start", f"Probe failed ({fail[:140]}). Super is repairing the script (attempt {attempts})")
@@ -230,7 +239,7 @@ class Pipeline:
                     self.emit("codegen", "warn", f"repair failed: {e}")
                     break
                 script, reqs = gen["script"], gen["requirements"]
-                first = self._one(run, self._spec(script, reqs, repo, seeds[0], bundled))
+                first = self._one(run, self._spec(script, reqs, repo, seeds[0], bundled), claim)
             if attempts:
                 if first.ok:
                     self.emit("codegen", "done", f"Script repaired after {attempts} attempt(s)")
@@ -239,7 +248,7 @@ class Pipeline:
             results.append(first)
             seeds = seeds[1:] if first.ok else []  # no point burning N jobs on a script that cannot run
         with ThreadPoolExecutor(max_workers=par) as ex:
-            futs = [ex.submit(self._one, run, self._spec(script, reqs, repo, s, bundled)) for s in seeds]
+            futs = [ex.submit(self._one, run, self._spec(script, reqs, repo, s, bundled), claim) for s in seeds]
             for f in as_completed(futs):
                 results.append(f.result())
         results.sort(key=lambda r: r.seed)

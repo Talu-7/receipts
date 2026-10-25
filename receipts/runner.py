@@ -62,15 +62,28 @@ class JobResult:
                 ("seed", "ok", "value", "metric", "extras", "seconds", "job_id", "backend", "meta", "error")}
 
 
+def _parse_result(payload: str) -> dict | None:
+    """JSON, or failing that a Python dict literal: generated scripts often f-string a dict repr into the line."""
+    try:
+        d = json.loads(payload)
+    except ValueError:
+        import ast
+        py = re.sub(r"\btrue\b", "True", re.sub(r"\bfalse\b", "False", re.sub(r"\bnull\b", "None", payload)))
+        try:
+            d = ast.literal_eval(py)
+        except (ValueError, SyntaxError):
+            return None
+    return d if isinstance(d, dict) else None
+
+
 def parse_logs(seed: int, logs: str, seconds: float, job_id: str, backend: str, returncode_ok: bool) -> JobResult:
     result = None
     meta: dict = {}
     err = ""
     for line in logs.splitlines():
         if line.startswith("RECEIPTS_RESULT "):
-            try:
-                result = json.loads(line[len("RECEIPTS_RESULT "):])
-            except ValueError:
+            result = _parse_result(line[len("RECEIPTS_RESULT "):])
+            if result is None:
                 err = "unparseable RECEIPTS_RESULT line"
         elif line.startswith("RECEIPTS_META "):
             try:
@@ -159,14 +172,21 @@ class NebiusRunner:
 
     def _cli(self, *args: str, timeout: int = 180):
         base = ["nebius"] + (["--profile", self.profile] if self.profile else [])
-        p = subprocess.run([*base, *args], capture_output=True, text=True, timeout=timeout)
+        try:
+            p = subprocess.run([*base, *args], capture_output=True, text=True, timeout=timeout)
+        except FileNotFoundError:
+            return 127, "", "nebius CLI not found on PATH (it installs to ~/.nebius/bin; run from a shell that has it)"
+        except subprocess.TimeoutExpired:
+            return 124, "", f"nebius {' '.join(args[:3])} timed out after {timeout}s"
         return p.returncode, (p.stdout or ""), (p.stderr or "")
 
     def run(self, spec: JobSpec) -> JobResult:
         t0 = time.time()
         name = re.sub(r"[^a-z0-9-]", "-", f"receipts-{spec.run_id}-s{spec.seed}".lower())[:60].strip("-")
         cmd = ["ai", "job", "create", "--name", name, "--image", self.image, "--platform", self.platform,
-               "--timeout", self.timeout, "--args", spec.payload_b64()]
+               "--timeout", self.timeout, "--args", spec.payload_b64(),
+               # without --async the CLI blocks on the job; we poll ourselves below
+               "--async", "--format", "jsonpath={.resource_id}"]
         if self.preset:
             cmd += ["--preset", self.preset]
         if self.parent_id:
@@ -177,8 +197,10 @@ class NebiusRunner:
         if rc != 0:
             return JobResult(spec.seed, False, logs=out + err, seconds=time.time() - t0, backend=self.name,
                              error="job create failed: " + (err or out)[:300])
-        m = re.search(r"\b(aijob-[a-z0-9]+)\b", out + err)
-        job_id = m.group(1) if m else ""
+        job_id = out.strip() if re.fullmatch(r"[A-Za-z0-9-]+", out.strip()) else ""
+        if not job_id:
+            m = re.search(r"\b(aijob-[a-z0-9]+)\b", out + err)
+            job_id = m.group(1) if m else ""
         if not job_id:
             rc, out2, err2 = self._cli("ai", "job", "get-by-name", "--name", name, "--format", "json")
             try:
@@ -226,8 +248,9 @@ class DockerRunner:
     """
     name = "docker"
 
-    def __init__(self, image: str, memory: str = "4g", cpus: str = "2", pids: int = 512, gpus: bool = False):
-        self.image, self.memory, self.cpus, self.pids, self.gpus = image, memory, cpus, pids, gpus
+    def __init__(self, image: str, memory: str = "4g", cpus: str = "2", pids: int = 512, gpus: bool = False,
+                 shm: str = "1g"):
+        self.image, self.memory, self.cpus, self.pids, self.gpus, self.shm = image, memory, cpus, pids, gpus, shm
         self._image_id: str | None = None
 
     @staticmethod
@@ -249,7 +272,9 @@ class DockerRunner:
         spec = replace(spec, no_network=False)
         needs_net = bool(spec.repo_url) or spec.install
         cmd = ["docker", "run", "--rm", "--name", container_name, "--cap-drop=ALL", "--security-opt=no-new-privileges",
-               "--pids-limit", str(self.pids), "--memory", self.memory, "--cpus", self.cpus]
+               "--pids-limit", str(self.pids), "--memory", self.memory, "--cpus", self.cpus,
+               # Docker's default 64 MB /dev/shm kills PyTorch DataLoader workers with a bus error
+               "--shm-size", self.shm]
         if not needs_net:
             cmd += ["--network", "none"]
         if self.gpus:

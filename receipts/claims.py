@@ -30,12 +30,18 @@ Return JSON:
       "est_gpu_minutes": <number>}}
   ],
   "headline": "<id of the paper's headline claim, preferring one that is tractable>"
-}}"""
+}}
+The headline must be an experimental RESULT the paper reports from running its method on data (accuracy, error,
+F1, BLEU, MSE...), ideally its main benchmark result. Never pick a property that holds by construction, such as
+parameter count, model size, FLOPs or speed: those cannot fail to reproduce and say nothing about the results."""
 
 
-def extract_claims(llm: LLM, meta: dict, fulltext: str) -> dict:
+def extract_claims(llm: LLM, meta: dict, fulltext: str, hint: str = "") -> dict:
     text = (fulltext or "")[:45_000] or "(full text unavailable; use the abstract only)"
-    out = llm.chat_json("super", SYSTEM, PROMPT.format(title=meta["title"], abstract=meta["abstract"], text=text),
+    prompt = PROMPT.format(title=meta["title"], abstract=meta["abstract"], text=text)
+    if hint:
+        prompt += f"\nThe user asked to check this specific result; include it and make it the headline: {hint}"
+    out = llm.chat_json("super", SYSTEM, prompt,
                         max_tokens=3000, temperature=0.1)
     claims = []
     for i, c in enumerate(out.get("claims", []), 1):

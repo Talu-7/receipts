@@ -30,6 +30,23 @@ def summarize(values: list[float]) -> dict:
             "ci95": [mean - half, mean + half] if n > 1 else None}
 
 
+_CAN_BE_NEGATIVE = ("r2", "r^2", "r²", "log", "likelihood", "elbo", "corr", "reward", "return", "improvement", "delta", "gain")
+
+
+def implausible(value: float, claim: dict) -> str | None:
+    """A per-run sanity check. Scripts sometimes print a placeholder (-1, nan) instead of failing; such a number
+    must never count as evidence, in either direction."""
+    if value is None or not math.isfinite(value):
+        return "result is not a finite number"
+    metric = (claim.get("metric") or "").lower()
+    claimed = claim.get("value")
+    if value < 0 and isinstance(claimed, (int, float)) and claimed >= 0 and not any(k in metric for k in _CAN_BE_NEGATIVE):
+        return f"negative {claim.get('metric') or 'metric'} ({value:g}) is impossible: the script printed a placeholder"
+    if (claim.get("unit") or "").strip() == "%" and not (0 <= value <= 100):
+        return f"{value:g}% is outside 0-100"
+    return None
+
+
 def decide(claimed: float, values: list[float], requested: int, *, tol: float | None = None,
            higher_is_better: bool = True) -> dict:
     """Return verdict + the numbers behind it.
@@ -54,7 +71,11 @@ def decide(claimed: float, values: list[float], requested: int, *, tol: float | 
     partial_allowed = max(3 * tol, 4 * std)
     in_range = s["min"] <= claimed <= s["max"]
     note = ""
-    if shortfall <= allowed:
+    if shortfall <= allowed and -shortfall > max(allowed, 0.5 * abs(claimed)):
+        # far better than the paper's own number: almost always a broken script or wrong metric, not a win
+        verdict = INCONCLUSIVE
+        note = "reproduced result is implausibly better than the claim (more than 50%); likely a wrong metric or a broken script"
+    elif shortfall <= allowed:
         verdict = REPRODUCED
         if -shortfall > allowed:
             note = "reproduced result is better than the claim"

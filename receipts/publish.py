@@ -36,5 +36,5 @@ def bundle(src: str, dst: str) -> tuple[int, list[str]]:
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
         n += 1
-    (d / MARKER).write_text("created by `python -m receipts bundle`; safe to delete and rebuild\n")
+    (d / MARKER).write_text("created by `python -m receipts bundle`; safe to delete and rebuild\n", encoding="utf-8")
     return n, leakcheck(str(d), [str(s / ".env")])

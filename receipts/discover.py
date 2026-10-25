@@ -9,13 +9,14 @@ from .arxiv_src import github_links
 from .search import Tavily
 
 
-def discover(search: Tavily, meta: dict, fulltext: str) -> dict:
+def discover(search: Tavily, meta: dict, fulltext: str, dataset: str = "") -> dict:
     title = meta["title"]
     queries = {
         "code": (f"{title} official code github", ["github.com"]),
         "erratum": (f"\"{title}\" erratum OR correction OR errata OR retraction", None),
         "replication": (f"\"{title}\" reproducibility replication attempt results differ", None),
-        "data": (f"{title} dataset download", None),
+        # search for the claim's dataset by name: the paper title only finds other papers
+        "data": (f"{dataset} dataset download csv github" if dataset else f"{title} dataset download", None),
     }
     results: dict[str, list[dict]] = {}
     if search.available:
@@ -55,8 +56,27 @@ to reproduce/replicate THIS paper's results. Exclude generic explainers, Wikiped
 tutorials and errata for other papers. Use an empty list if none qualify."""
 
 
-def filter_evidence(llm, title: str, evidence: list[dict]) -> list[dict]:
+def readme_notice(readme: str, repo_url: str) -> dict | None:
+    """Authors often post their erratum in the repo README (a bug notice, revised results). Surface it as evidence."""
+    lines = (readme or "").splitlines()
+    for i, line in enumerate(lines):
+        if re.search(r"\b(bug|erratum|errata|correction|corrected|revised results?|fixed an? (issue|error))\b", line, re.I):
+            # start at the matching line (update lists bury the notice mid-paragraph) and keep a little context
+            text = re.sub(r"\s+", " ", re.sub(r"^\s*[-*+]\s*|[#*`>]", "", " ".join(lines[i:i + 3]))).strip()
+            if len(text) > 40:
+                return {"kind": "erratum", "title": "Authors' notice in the official repository README", "url": repo_url,
+                        "snippet": text[:300], "why": "the authors report a bug or correction in their own repository"}
+    return None
+
+
+def _is_paper_itself(url: str, arxiv_id: str | None) -> bool:
+    base = re.sub(r"v\d+$", "", arxiv_id or "")
+    return bool(base) and base in url and ("arxiv.org" in url or "ar5iv" in url)
+
+
+def filter_evidence(llm, title: str, evidence: list[dict], arxiv_id: str | None = None) -> list[dict]:
     """Drop search hits that merely mention the paper. Never present a generic page as an erratum."""
+    evidence = [e for e in evidence if not _is_paper_itself(e["url"], arxiv_id)]  # the paper is not its own erratum
     cand = [e for e in evidence if e["kind"] in ("erratum", "replication")]
     other = [e for e in evidence if e["kind"] not in ("erratum", "replication")]
     if not cand:
@@ -91,8 +111,20 @@ def filter_evidence(llm, title: str, evidence: list[dict]) -> list[dict]:
     return out_list
 
 
-def repo_context(repo_url: str) -> dict:
-    """README, file tree and pinned HEAD commit for a GitHub repo (best effort, unauthenticated)."""
+def pick_run_scripts(tree: list[str], dataset: str, limit: int = 3) -> list[str]:
+    """Shell/py launch scripts whose path names the claim's dataset (e.g. scripts/FITS/etth1_best.sh).
+    They hold the authors' exact command line and hyperparameters, which the README rarely does."""
+    tok = re.sub(r"[^a-z0-9]", "", (dataset or "").lower())
+    if len(tok) < 3:
+        return []
+    hits = [p for p in tree if p.lower().endswith((".sh", ".bash", ".yaml", ".yml"))
+            and tok in re.sub(r"[^a-z0-9]", "", p.lower())]
+    rank = lambda p: (not any(k in p.lower() for k in ("best", "fin", "final", "main")), len(p))
+    return sorted(hits, key=rank)[:limit]
+
+
+def repo_context(repo_url: str, dataset: str = "") -> dict:
+    """README, file tree, run scripts for the claim's dataset and pinned HEAD commit (best effort, unauthenticated)."""
     m = re.match(r"https://github\.com/([^/]+)/([^/]+)", repo_url)
     if not m:
         return {}
@@ -105,7 +137,12 @@ def repo_context(repo_url: str) -> dict:
         ctx["description"] = info.get("description")
         ctx["commit"] = http.get_json(f"https://api.github.com/repos/{owner}/{repo}/commits/{branch}", timeout=20).get("sha")
         tree = http.get_json(f"https://api.github.com/repos/{owner}/{repo}/git/trees/{branch}?recursive=1", timeout=30)
-        ctx["tree"] = [t["path"] for t in tree.get("tree", []) if t.get("type") == "blob"][:200]
+        full = [t["path"] for t in tree.get("tree", []) if t.get("type") == "blob"]
+        ctx["all_files"] = full
+        # big repos are mostly logs/results; show code and configs first so the entry points are visible
+        noise = lambda p: bool(re.search(r"(^|/)(logs?|results?|outputs?|checkpoints?|wandb|figures?|imgs?|images?)/", p.lower()))
+        code = lambda p: p.lower().endswith((".py", ".sh", ".yaml", ".yml", ".json", ".toml", ".cfg", ".txt", ".md", ".ipynb"))
+        ctx["tree"] = sorted(full, key=lambda p: (noise(p), not code(p), p.count("/")))[:200]
     except Exception as e:
         ctx["api_error"] = str(e)[:200]
     for name in ("README.md", "readme.md", "README.rst", "README"):
@@ -114,4 +151,12 @@ def repo_context(repo_url: str) -> dict:
             break
         except Exception:
             continue
+    scripts = {}
+    for path in pick_run_scripts(ctx.pop("all_files", None) or ctx.get("tree", []), dataset):
+        try:
+            scripts[path] = http.request(f"https://raw.githubusercontent.com/{owner}/{repo}/{ctx.get('commit') or 'HEAD'}/{path}",
+                                         timeout=20)[:3000]
+        except Exception:
+            continue
+    ctx["run_scripts"] = scripts
     return ctx

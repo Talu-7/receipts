@@ -84,7 +84,7 @@ class LLM:
             return chosen
 
     def chat(self, role: str, system: str, user: str, *, max_tokens: int = 4096,
-             temperature: float = 0.2, retries: int = 3) -> str:
+             temperature: float = 0.2, retries: int = 5) -> str:
         if not self.available:
             raise RuntimeError("NEBIUS_API_KEY is not set")
         body = {
@@ -119,7 +119,8 @@ class LLM:
                 last = e
                 if e.status in (400, 401, 403, 404):
                     break
-                time.sleep(2 ** attempt)
+                # rate limited / overloaded (Token Factory sends 529): back off for longer
+                time.sleep(min(60, 5 * 3 ** attempt) if e.status in (429, 503, 529) else 2 ** attempt)
             except Exception as e:  # network hiccup
                 last = e
                 time.sleep(2 ** attempt)

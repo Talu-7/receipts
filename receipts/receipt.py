@@ -110,6 +110,6 @@ def write(r: dict, out_dir: str) -> tuple[str, str]:
     d.mkdir(parents=True, exist_ok=True)
     jp = d / f"receipt-{r['receipt_id']}.json"
     hp = d / f"receipt-{r['receipt_id']}.html"
-    jp.write_text(json.dumps(r, indent=2, default=str))
-    hp.write_text(render_html(r))
+    jp.write_text(json.dumps(r, indent=2, default=str), encoding="utf-8")
+    hp.write_text(render_html(r), encoding="utf-8")
     return str(jp), str(hp)

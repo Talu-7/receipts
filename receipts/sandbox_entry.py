@@ -23,6 +23,7 @@ import base64
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -38,6 +39,15 @@ def sh(cmd, cwd=None, timeout=900, env=None):
     p = subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, text=True, timeout=timeout)
     out = (p.stdout or "") + (p.stderr or "")
     return p.returncode, out
+
+
+def _installed(dist):
+    try:
+        from importlib.metadata import version
+        version(dist)
+        return True
+    except Exception:
+        return False
 
 
 def main():
@@ -79,12 +89,29 @@ def main():
         if payload.get("install_repo_requirements") and os.path.exists(rq):
             rc, out = sh([sys.executable, "-m", "pip", "install", "-q", "--disable-pip-version-check", "-r", rq], timeout=1500)
             if rc != 0:
-                print(out[-4000:])
-                print("RECEIPTS_ERROR repo_requirements_failed")
-                sys.exit(3)
+                # Old repos pin versions that no longer install. Fall back to best effort: one package at a time,
+                # exact pins relaxed, and never replace a torch that is already installed (the image's CUDA build).
+                errs = [l for l in out.splitlines() if l.startswith("ERROR")]
+                print("exact repo requirements failed (" + "; ".join(e[:160] for e in errs[-2:]) + "); retrying with relaxed pins",
+                      flush=True)
+                skipped, failed, relaxed = [], [], []
+                for line in open(rq, encoding="utf-8", errors="replace").read().splitlines():
+                    line = line.split("#", 1)[0].strip()
+                    if not line or line.startswith("-"):
+                        continue
+                    name = re.split(r"[=<>!~\[; ]", line, 1)[0].strip()
+                    if name.lower() in ("torch", "torchvision", "torchaudio") and _installed(name):
+                        skipped.append(line)
+                        continue
+                    # keep the authors' exact pin when it still installs; relax only the ones that do not
+                    rc1, _ = sh([sys.executable, "-m", "pip", "install", "-q", "--disable-pip-version-check", line], timeout=900)
+                    if rc1 != 0:
+                        rc1, _ = sh([sys.executable, "-m", "pip", "install", "-q", "--disable-pip-version-check", name], timeout=900)
+                        (relaxed if rc1 == 0 else failed).append(line if rc1 == 0 else name)
+                meta(repo_requirements="partly_relaxed", relaxed_pins=relaxed, kept_preinstalled=skipped, uninstallable=failed)
 
     path = os.path.join(work, "repro.py")
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         f.write(script)
 
     env = dict(os.environ)
