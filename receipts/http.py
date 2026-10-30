@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import time
 import urllib.error
 import urllib.request
 
@@ -20,12 +21,23 @@ def request(url: str, method: str = "GET", headers: dict | None = None,
     h = {"User-Agent": "receipts/0.1 (+hackathon)", **(headers or {})}
     if data is not None:
         h.setdefault("Content-Type", "application/json")
-    req = urllib.request.Request(url, data=data, headers=h, method=method)
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as r:
-            return r.read().decode("utf-8", "replace")
-    except urllib.error.HTTPError as e:
-        raise HTTPError(e.code, e.read().decode("utf-8", "replace"), url) from None
+    # GETs are retried when rate limited (arXiv answers 429 to bursts); POSTs are retried by their callers
+    attempts = 4 if method == "GET" else 1
+    for attempt in range(attempts):
+        req = urllib.request.Request(url, data=data, headers=h, method=method)
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return r.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as e:
+            err = HTTPError(e.code, e.read().decode("utf-8", "replace"), url)
+            if e.code not in (429, 503) or attempt == attempts - 1:
+                raise err from None
+            try:
+                wait = min(30.0, float(e.headers.get("Retry-After") or 0)) or 5.0 * 2 ** attempt
+            except ValueError:
+                wait = 5.0 * 2 ** attempt
+            time.sleep(wait)
+    raise RuntimeError("unreachable")
 
 
 def get_json(url: str, **kw):

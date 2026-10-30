@@ -69,14 +69,24 @@ def readme_notice(readme: str, repo_url: str) -> dict | None:
     return None
 
 
-def _is_paper_itself(url: str, arxiv_id: str | None) -> bool:
+def _norm_title(s: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", (s or "").lower())
+
+
+def _is_paper_itself(url: str, arxiv_id: str | None, hit_title: str = "", paper_title: str = "") -> bool:
     base = re.sub(r"v\d+$", "", arxiv_id or "")
-    return bool(base) and base in url and ("arxiv.org" in url or "ar5iv" in url)
+    if base and base in url and ("arxiv.org" in url or "ar5iv" in url):
+        return True
+    # a copy of the paper hosted elsewhere (OpenReview, a PDF mirror) whose title is the paper's own title
+    t, p = _norm_title(hit_title), _norm_title(paper_title)
+    return len(p) >= 12 and len(t) >= 12 and (t == p or t.startswith(p) or p.startswith(t))
 
 
 def filter_evidence(llm, title: str, evidence: list[dict], arxiv_id: str | None = None) -> list[dict]:
     """Drop search hits that merely mention the paper. Never present a generic page as an erratum."""
-    evidence = [e for e in evidence if not _is_paper_itself(e["url"], arxiv_id)]  # the paper is not its own erratum
+    # the paper is not evidence about itself (only for erratum/replication; code/data pages are kept)
+    evidence = [e for e in evidence if not (e["kind"] in ("erratum", "replication")
+                                            and _is_paper_itself(e["url"], arxiv_id, e.get("title", ""), title))]
     cand = [e for e in evidence if e["kind"] in ("erratum", "replication")]
     other = [e for e in evidence if e["kind"] not in ("erratum", "replication")]
     if not cand:

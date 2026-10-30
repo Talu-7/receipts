@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import math
 import json
 from html import escape
 from pathlib import Path
@@ -23,11 +24,21 @@ def _fmt(x, nd=2):
     return "-" if x is None else f"{x:.{nd}f}"
 
 
+def _digits(ref) -> int:
+    """Decimals that suit the metric: 94.0 for percentages, 0.3721 for an MSE of 0.37."""
+    a = abs(ref or 0) or 1.0
+    return 1 if a >= 10 else min(4, max(2, 3 - math.floor(math.log10(a))))
+
+
+def _fmtv(x, ref=None):
+    return _fmt(x, _digits(x if ref is None else ref))
+
+
 def _gauge(claimed: float, stats: dict) -> str:
     if not stats or stats.get("n", 0) == 0:
         return ""
     lo, hi = min(claimed, stats["min"]), max(claimed, stats["max"])
-    pad = max((hi - lo) * 0.25, 1.0)
+    pad = max((hi - lo) * 0.6, abs(claimed) * 0.01, 1e-6)  # relative to the claim's scale
     lo, hi = lo - pad, hi + pad
     W = 720
     x = lambda v: 20 + (v - lo) / (hi - lo) * (W - 40)
@@ -38,9 +49,9 @@ def _gauge(claimed: float, stats: dict) -> str:
     if ci:
         parts.append(f'<rect x="{x(ci[0]):.1f}" y="46" width="{max(x(ci[1])-x(ci[0]),3):.1f}" height="18" rx="3" fill="#3b82f6" opacity=".8"/>')
     parts += [f'<line x1="{x(stats["mean"]):.1f}" y1="38" x2="{x(stats["mean"]):.1f}" y2="72" stroke="#fff" stroke-width="3"/>',
-              f'<text x="{x(stats["mean"]):.1f}" y="88" fill="#e5e7eb" font-size="13" text-anchor="middle">reproduced mean {stats["mean"]:.1f}</text>',
+              f'<text x="{x(stats["mean"]):.1f}" y="88" fill="#e5e7eb" font-size="13" text-anchor="middle">reproduced mean {_fmtv(stats["mean"], claimed)}</text>',
               f'<line x1="{x(claimed):.1f}" y1="14" x2="{x(claimed):.1f}" y2="72" stroke="#f43f5e" stroke-width="3" stroke-dasharray="5 3"/>',
-              f'<text x="{x(claimed):.1f}" y="11" fill="#fda4af" font-size="13" text-anchor="middle">claimed {claimed:.1f}</text>',
+              f'<text x="{x(claimed):.1f}" y="11" fill="#fda4af" font-size="13" text-anchor="middle">claimed {_fmtv(claimed)}</text>',
               "</svg>"]
     return "".join(parts)
 
@@ -53,7 +64,7 @@ def render_html(r: dict) -> str:
     synthetic = ('<div class="synthetic">SYNTHETIC DEMO CASE: this is a bundled example, not a real paper, '
                  'and no real authors are implicated.</div>') if r.get("synthetic_demo") else ""
     rows = "".join(
-        f'<tr><td>{x["seed"]}</td><td>{"ok" if x["ok"] else "failed"}</td><td>{_fmt(x["value"], 3)}</td>'
+        f'<tr><td>{x["seed"]}</td><td>{"ok" if x["ok"] else "failed"}</td><td>{_fmtv(x["value"], claim["value"])}</td>'
         f'<td>{escape(json.dumps(x.get("extras") or {}))}</td><td>{x["seconds"]:.1f}s</td>'
         f'<td>{escape(x.get("job_id") or "")}</td><td>{escape(x.get("log_summary") or x.get("error") or "")}</td></tr>'
         for x in r["runs"])
@@ -64,9 +75,10 @@ def render_html(r: dict) -> str:
     dbul = "".join(f"<li>{escape(str(b))}</li>" for b in d.get("evidence", []))
     logs = "".join(f'<details><summary>seed {x["seed"]} log</summary><pre>{escape((x.get("logs") or "")[-5000:])}</pre></details>' for x in r["runs"])
     repo = r.get("repo") or {}
-    cmp_line = (f'claimed <b>{claim["value"]:.2f}</b> vs reproduced <b>{_fmt(st["mean"])}</b> '
-                f'(±{_fmt(st["std"])} over {st["n"]} of {r["seeds_requested"]} runs)') if st["n"] else \
-        f'claimed <b>{claim["value"]:.2f}</b>; no run produced a number'
+    c = claim["value"]
+    cmp_line = (f'claimed <b>{_fmtv(c)}</b> vs reproduced <b>{_fmtv(st["mean"], c)}</b> '
+                f'(±{_fmtv(st["std"], c)} over {st["n"]} of {r["seeds_requested"]} runs)') if st["n"] else \
+        f'claimed <b>{_fmtv(c)}</b>; no run produced a number'
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Receipt {escape(r["receipt_id"])}</title><style>
 body{{background:#0b0f17;color:#e5e7eb;font:15px/1.55 system-ui,sans-serif;margin:0}}

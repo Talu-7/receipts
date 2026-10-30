@@ -122,7 +122,9 @@ const LABEL = {reproduced:["REPRODUCED","var(--green)","#1f9d55"],partially_repr
 const STAGES = [["ingest","Read paper"],["claims","Claims"],["discover","Repo + evidence"],["codegen","Write code"],
                 ["run","Run seeds"],["analyze","Verdict"],["summarize","Summarise"],["diagnose","Diagnose"],["receipt","Receipt"]];
 let token = 0;
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+// ?speed=2 plays the replay at half speed (useful for screen recordings)
+const SPEED = Math.max(0.25, Number(new URLSearchParams(location.search).get("speed")) || 1);
+const sleep = ms => new Promise(r => setTimeout(r, ms * SPEED));
 
 function el(tag, props = {}, ...kids){
   const e = document.createElement(tag);
@@ -131,12 +133,16 @@ function el(tag, props = {}, ...kids){
   return e;
 }
 const fmt = (x, n = 2) => (x === null || x === undefined) ? "-" : Number(x).toFixed(n);
+// decimals that suit the metric: 94.0 for percentages, 0.3721 for an MSE of 0.37
+const digits = ref => { const a = Math.abs(Number(ref)) || 1; return a >= 10 ? 1 : Math.min(4, Math.max(2, 2 - Math.floor(Math.log10(a)) + 1)); };
+const fmtv = (x, ref) => fmt(x, digits(ref === undefined ? x : ref));
 
 function labelOf(r){ return LABEL[r.verdict.verdict] || [r.verdict.verdict, "var(--grey)", "#6b7280"]; }
 
 function shortLine(r){
   const st = r.verdict.stats;
-  return st && st.n ? "claimed " + fmt(r.claim.value, 1) + " vs reproduced " + fmt(st.mean, 1) : "claimed " + fmt(r.claim.value, 1) + "; no number produced";
+  const c = r.claim.value;
+  return st && st.n ? "claimed " + fmtv(c) + " vs reproduced " + fmtv(st.mean, c) : "claimed " + fmtv(c) + "; no number produced";
 }
 
 function buildCases(){
@@ -161,9 +167,9 @@ function buildCases(){
 function eventsFor(r){
   const ev = [], runs = r.runs || [], st = r.verdict.stats, d = r.diagnosis;
   ev.push(["ingest", "done", "Reading: " + r.paper.title]);
-  ev.push(["claims", "done", "Claim: " + (r.claim.metric || "") + " = " + fmt(r.claim.value, 1) + (r.claim.unit || "")]);
+  ev.push(["claims", "done", "Claim: " + (r.claim.metric || "") + " = " + fmtv(r.claim.value) + (r.claim.unit || "")]);
   const nev = (r.evidence || []).length;
-  ev.push(["discover", "done", r.repo && r.repo.url ? "Repo " + r.repo.url + "; " + nev + " evidence links" :
+  ev.push(["discover", "done", r.repo && r.repo.url ? "Tavily: found " + r.repo.url + " + " + nev + " evidence links (errata, data, replications)" :
            (r.synthetic_demo ? "Synthetic case: bundled code, no search needed" : "No public repo found")]);
   if (r.script && r.script.code) ev.push(["codegen", "done", "Reproduction script ready (" + r.script.code.split("\n").length + " lines)"]);
   if (runs.length){
@@ -204,7 +210,7 @@ async function play(r){
     if (stage === "seed"){
       const c = chip(x.seed);
       if (status === "start"){ c.className = "chip run"; c.textContent = "seed " + x.seed + " …"; await sleep(90); }
-      else { c.className = "chip " + (x.ok ? "ok" : "bad"); c.textContent = "seed " + x.seed + ": " + (x.ok ? fmt(x.value) : "failed"); await sleep(140); }
+      else { c.className = "chip " + (x.ok ? "ok" : "bad"); c.textContent = "seed " + x.seed + ": " + (x.ok ? fmtv(x.value, r.claim.value) : "failed"); await sleep(140); }
       continue;
     }
     setStage(stage, "start", msg); await sleep(260);
@@ -216,7 +222,8 @@ async function play(r){
 
 function gauge(claimed, st){
   const W = 720, lo0 = Math.min(claimed, st.min), hi0 = Math.max(claimed, st.max);
-  const pad = Math.max((hi0 - lo0) * .25, 1), lo = lo0 - pad, hi = hi0 + pad;
+  // pad relative to the claim's scale, so an MSE of 0.37 is not squashed into a 2-unit-wide axis
+  const pad = Math.max((hi0 - lo0) * .6, Math.abs(claimed) * .01, 1e-6), lo = lo0 - pad, hi = hi0 + pad;
   const x = v => 20 + (v - lo) / (hi - lo) * (W - 40);
   const ns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(ns, "svg"); svg.setAttribute("viewBox", "0 0 " + W + " 96"); svg.style.width = "100%";
@@ -225,9 +232,9 @@ function gauge(claimed, st){
   add("rect", {x: x(st.min), y: 44, width: Math.max(x(st.max) - x(st.min), 3), height: 28, rx: 4, fill: "#3b82f6", opacity: .35});
   if (st.ci95) add("rect", {x: x(st.ci95[0]), y: 49, width: Math.max(x(st.ci95[1]) - x(st.ci95[0]), 3), height: 18, rx: 3, fill: "#3b82f6", opacity: .85});
   add("line", {x1: x(st.mean), y1: 40, x2: x(st.mean), y2: 76, stroke: "#fff", "stroke-width": 3});
-  add("text", {x: x(st.mean), y: 92, fill: "#e5e7eb", "font-size": 13, "text-anchor": "middle"}, "reproduced mean " + st.mean.toFixed(1));
+  add("text", {x: x(st.mean), y: 92, fill: "#e5e7eb", "font-size": 13, "text-anchor": "middle"}, "reproduced mean " + fmtv(st.mean, claimed));
   add("line", {x1: x(claimed), y1: 16, x2: x(claimed), y2: 76, stroke: "#f43f5e", "stroke-width": 3, "stroke-dasharray": "5 3"});
-  add("text", {x: x(claimed), y: 12, fill: "#fda4af", "font-size": 13, "text-anchor": "middle"}, "claimed " + claimed.toFixed(1));
+  add("text", {x: x(claimed), y: 12, fill: "#fda4af", "font-size": 13, "text-anchor": "middle"}, "claimed " + fmtv(claimed));
   return svg;
 }
 
@@ -239,7 +246,7 @@ function showReceipt(r){
   const vv = el("div", {className: "v", textContent: label}); vv.style.color = color;
   banner.append(vv);
   banner.append(el("div", {className: "cmp", textContent: st.n
-    ? "claimed " + fmt(r.claim.value) + "  vs  reproduced " + fmt(st.mean) + " ± " + fmt(st.std) + "  (" + st.n + " of " + r.seeds_requested + " runs, range " + fmt(st.min) + "–" + fmt(st.max) + ")"
+    ? "claimed " + fmtv(r.claim.value) + "  vs  reproduced " + fmtv(st.mean, r.claim.value) + " ± " + fmtv(st.std, r.claim.value) + "  (" + st.n + " of " + r.seeds_requested + " runs, range " + fmtv(st.min, r.claim.value) + "–" + fmtv(st.max, r.claim.value) + ")"
     : "no run produced a number"}));
   if (v.reason) banner.append(el("div", {className: "muted", textContent: v.reason}));
   if (st.n) banner.append(gauge(r.claim.value, st));

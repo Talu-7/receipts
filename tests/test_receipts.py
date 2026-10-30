@@ -108,6 +108,9 @@ class TestEvidence(unittest.TestCase):
         from receipts.discover import filter_evidence
         ev = [{"kind": "erratum", "title": "FITS", "url": "https://arxiv.org/abs/2307.03756", "snippet": "erratum"}]
         self.assertEqual(filter_evidence(None, "FITS", ev, "2307.03756v1"), [])
+        mirror = [{"kind": "replication", "title": "FITS: MODELING TIME SERIES WITH 10k PARAME- TERS",
+                   "url": "https://openreview.net/pdf?id=x", "snippet": "replication"}]
+        self.assertEqual(filter_evidence(None, "FITS: Modeling Time Series with $10k$ Parameters", mirror), [])
 
     def test_readme_bug_notice_found(self):
         from receipts.discover import readme_notice
