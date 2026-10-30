@@ -10,7 +10,7 @@ code, the per-seed numbers, the logs, a tamper-evident hash, and a one-command w
 Built for the **Nebius × NVIDIA Global AI Hackathon**.
 
 - **Demo (recorded replays):** https://talu-7.github.io/receipts/
-- **Video:** add your YouTube link here
+- **Video (2:44):** https://youtu.be/zk1P_b_55LU
 
 ## On a real paper: FITS (ICLR 2024 Spotlight)
 
@@ -98,9 +98,11 @@ duplicate rows across the split), one mild overstatement, two clean controls, an
 | Verdicts matching the known answer | 8 / 8 |
 | Planted errors detected | 4 / 4 |
 | Clean cases wrongly flagged | 0 / 2 |
+| Cause named correctly (Nemotron 3 Ultra) | 5 / 5 |
 
-Verdicts come from deterministic statistics. The cause-attribution score depends on which model wrote the
-diagnosis, so re-run it with your Token Factory key: `python -m receipts bench bench/planted.json --seeds 8`.
+Verdicts come from deterministic statistics. The cause-attribution score depends on the model that wrote the
+diagnosis (5 / 5 is from our latest run with Nemotron 3 Ultra), so re-run it with your own Token Factory key:
+`python -m receipts bench bench/planted.json --seeds 8`.
 These cases are synthetic by design (they measure the method, not real papers) and are labelled as such everywhere.
 
 ## Quickstart
