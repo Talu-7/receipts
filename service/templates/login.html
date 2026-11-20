@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block title %}{{ "Sign up" if mode == "signup" else "Sign in" }} · Receipts{% endblock %}{% block body %}
+<h1>{{ "Create an account" if mode == "signup" else "Sign in" }}</h1>
+<div class="panel"><form method="post" action="{{ '/auth/signup' if mode == 'signup' else '/auth/login' }}">
+<label for="email">Email</label><input id="email" name="email" type="email" required autocomplete="email">
+<label for="password">Password{% if mode == "signup" %} (8+ characters){% endif %}</label>
+<input id="password" name="password" type="password" required minlength="8" autocomplete="{{ 'new-password' if mode == 'signup' else 'current-password' }}">
+<p><button type="submit">{{ "Sign up" if mode == "signup" else "Sign in" }}</button></p></form>
+{% if mode == "signup" %}<p class="muted">Have an account? <a href="/login">Sign in</a></p>{% else %}<p class="muted">New here? <a href="/login?mode=signup">Create an account</a></p>{% endif %}</div>
+<div class="panel"><form method="post" action="/auth/magic-link"><label for="ml">Or get a sign-in link by email</label>
+<input id="ml" name="email" type="email" required><p><button class="ghost" type="submit">Send magic link</button></p></form>
+<p class="muted">Email delivery is stubbed in this MVP; in dev mode the link is shown here.</p></div>
+{% endblock %}

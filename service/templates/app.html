@@ -1,0 +1,35 @@
+{% extends "base.html" %}{% block title %}Dashboard · Receipts{% endblock %}{% block body %}
+<h1>Check a paper</h1>
+<div class="panel"><form method="post" action="/checks">
+<label for="u">arXiv URL or id</label><input id="u" name="arxiv_url" placeholder="https://arxiv.org/abs/2106.09685" required>
+{% if settings.allow_demo_inputs %}<div class="muted" style="font-size:13px;margin-top:4px">Bundled synthetic cases also work: <code>demo:reproduces</code>, <code>demo:leakage</code>, <code>demo:broken</code></div>{% endif %}
+<details style="margin-top:10px"><summary>Pin the claim (optional: skips LLM claim extraction)</summary>
+<label for="cs">Claim statement</label><input id="cs" name="claim_statement" placeholder="ResNet-50 reaches 76.1% top-1 on ImageNet">
+<div class="row"><div><label for="cm">Metric</label><input id="cm" name="claim_metric" placeholder="top-1 accuracy"></div>
+<div><label for="cv">Value</label><input id="cv" name="claim_value" type="number" step="any"></div>
+<div><label for="cun">Unit</label><input id="cun" name="claim_unit" placeholder="%"></div>
+<div><label for="cd">Dataset</label><input id="cd" name="claim_dataset"></div></div></details>
+<label for="sd">Seeds (max {{ usage.plan.max_seeds }})</label><input id="sd" name="seeds" type="number" min="1" max="{{ usage.plan.max_seeds }}" value="{{ [5, usage.plan.max_seeds]|min }}" style="max-width:140px">
+<p><button type="submit">Run check</button></p></form></div>
+
+<h2>Usage · {{ usage.period }}</h2>
+<div class="panel"><b>{{ usage.plan.label }}</b> · {{ usage.checks_used }} / {{ usage.plan.checks_per_month }} checks ·
+{{ "%.1f"|format(usage.gpu_minutes_used) }} / {{ usage.plan.gpu_minutes_per_month|int }} GPU-min used
+{% if usage.gpu_minutes_reserved %}({{ "%.0f"|format(usage.gpu_minutes_reserved) }} reserved by unfinished checks){% endif %}
+{% if user.plan == "free" %}<form method="post" action="/billing/checkout" style="margin-top:10px">
+<button type="submit">Upgrade to Lab (${{ plans.lab.price_usd_month }}/mo, Stripe test mode)</button></form>{% endif %}</div>
+
+<h2>Your checks</h2>
+{% if checks %}<div class="table-wrap"><table><tr><th>check</th><th>input</th><th>status</th><th>verdict</th><th></th></tr>
+{% for c in checks %}<tr><td><a href="/c/{{ c.id }}"><code>{{ c.id }}</code></a></td><td>{{ c.arxiv_url }}</td><td>{{ c.status }}</td>
+<td>{% if c.receipt %}<img alt="{{ c.verdict }}" src="/badge/{{ c.id }}.svg">{% else %}<span class="muted">-</span>{% endif %}</td>
+<td>{% if c.receipt %}<a href="/receipts/{{ c.id }}">receipt</a>{% endif %}</td></tr>{% endfor %}</table></div>
+{% else %}<p class="muted">No checks yet.</p>{% endif %}
+
+<h2>API keys</h2>
+{% if new_key %}<div class="info">New key (shown once): <code>{{ new_key }}</code></div>{% endif %}
+<div class="panel">{% for k in keys %}<div><code>{{ k.prefix }}…</code> {{ k.name }} <span class="muted">created {{ k.created_at.strftime("%Y-%m-%d") }}</span></div>{% else %}<p class="muted">No keys.</p>{% endfor %}
+<form method="post" action="/api-keys" style="margin-top:10px"><div class="row"><input name="name" placeholder="key name" value="default"><button type="submit">Create API key</button></div></form>
+<pre>curl -X POST {{ settings.public_base_url }}/checks -H "Authorization: Bearer rcpt_..." \
+  -H "Content-Type: application/json" -d '{"arxiv_url": "https://arxiv.org/abs/2106.09685"}'</pre></div>
+{% endblock %}

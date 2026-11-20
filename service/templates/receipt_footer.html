@@ -1,0 +1,6 @@
+<h2>Signature</h2><table>
+<tr><td>algorithm</td><td>Ed25519 over the receipt's SHA-256 (<code>{{ c.receipt_sha256 }}</code>)</td></tr>
+<tr><td>key id</td><td><code>{{ c.signing_key_id }}</code> · <a href="/.well-known/receipts-pubkey">public key</a></td></tr>
+<tr><td>signature</td><td><code style="word-break:break-all">{{ c.signature }}</code></td></tr>
+<tr><td>check</td><td><a href="/receipts/{{ c.id }}/verify">verify now</a> · <a href="/receipts/{{ c.id }}.json">signed JSON</a></td></tr></table>
+<h2>Badge</h2><p><img alt="Receipts badge" src="/badge/{{ c.id }}.svg"></p><pre>{{ badge_md }}</pre>

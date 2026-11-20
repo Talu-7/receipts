@@ -1,0 +1,9 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Receipts{% endblock %}</title><link rel="stylesheet" href="/static/style.css"></head><body>
+<header class="top"><a class="brand" href="/">RECEIPTS</a><nav>
+{% if user %}<span class="muted">{{ user.email }} · {{ user.plan }}</span><a href="/app">Dashboard</a>
+<form method="post" action="/auth/logout" style="margin:0"><button class="ghost" type="submit">Sign out</button></form>
+{% else %}<a href="/login">Sign in</a><a class="btn" href="/login?mode=signup">Sign up</a>{% endif %}
+<a href="/docs">API</a></nav></header>
+<main>{% if error %}<div class="err">{{ error }}</div>{% endif %}{% if info %}<div class="info">{{ info }}</div>{% endif %}
+{% block body %}{% endblock %}</main></body></html>

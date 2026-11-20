@@ -1,0 +1,15 @@
+# BuildKit reads this for service/Dockerfile (context = repository root). Keep secrets and bulk out.
+**/.env
+**/.env.*
+**/__pycache__
+**/*.pyc
+.git
+out
+evals
+bench
+docs
+submission
+service/.venv
+service/data
+service/tests
+**/*.db

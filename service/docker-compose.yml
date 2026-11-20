@@ -1,0 +1,78 @@
+# Local stack: Postgres + API + worker.   From the repository root:
+#   docker compose -f service/docker-compose.yml up --build
+# then open http://localhost:8000
+#
+# Real-paper checks need NEBIUS_API_KEY / TAVILY_API_KEY and the sandbox image. Put them in service/.env
+# (optional file, never committed). Build the sandbox image once with:
+#   docker compose -f service/docker-compose.yml --profile sandbox build sandbox
+name: receipts-service
+
+x-service-env: &service-env
+  SERVICE_DATABASE_URL: postgresql+psycopg://receipts:receipts@db:5432/receipts
+  SERVICE_DATA_DIR: /data
+  SERVICE_PUBLIC_URL: ${SERVICE_PUBLIC_URL:-http://localhost:8000}
+  SERVICE_DEV_MODE: ${SERVICE_DEV_MODE:-1}
+  SERVICE_ALLOW_DEMO: ${SERVICE_ALLOW_DEMO:-1}
+  # dev-only default; set a real random value anywhere that is not your laptop
+  SERVICE_SECRET_KEY: ${SERVICE_SECRET_KEY:-dev-only-insecure-session-key}
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: receipts
+      POSTGRES_PASSWORD: receipts
+      POSTGRES_DB: receipts
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U receipts -d receipts"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  init:  # creates tables and the dev signing key once, before api/worker start
+    build: {context: .., dockerfile: service/Dockerfile}
+    image: receipts-service:local
+    command: ["python", "-m", "service.manage", "init"]
+    environment: *service-env
+    env_file: [{path: .env, required: false}]
+    volumes: [servicedata:/data]
+    depends_on: {db: {condition: service_healthy}}
+
+  api:
+    image: receipts-service:local
+    environment: *service-env
+    env_file: [{path: .env, required: false}]
+    ports: ["8000:8000"]
+    volumes: [servicedata:/data]
+    depends_on: {init: {condition: service_completed_successfully}}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  worker:
+    image: receipts-service:local
+    command: ["python", "-m", "service.worker"]
+    environment:
+      <<: *service-env
+      SERVICE_RUNNER: ${SERVICE_RUNNER:-docker}
+      RECEIPTS_JOB_IMAGE: ${RECEIPTS_JOB_IMAGE:-receipts-sandbox:local}
+    env_file: [{path: .env, required: false}]
+    volumes:
+      - servicedata:/data
+      # Gives the worker control of the host Docker daemon (root-equivalent). Fine on a dev box; in production
+      # run sandboxes on a separate GPU host or a remote runner (see README "Deployment").
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on: {init: {condition: service_completed_successfully}}
+
+  sandbox:  # only builds the reproduction image; never runs as a service
+    profiles: [sandbox]
+    build: {context: .., dockerfile: sandbox/Dockerfile}
+    image: receipts-sandbox:local
+    entrypoint: ["true"]
+
+volumes:
+  pgdata:
+  servicedata:

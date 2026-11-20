@@ -1,0 +1,25 @@
+:root{--bg:#0b0f17;--panel:#111827;--line:#1f2937;--fg:#e5e7eb;--muted:#9ca3af;--accent:#3b82f6;--ok:#1f9d55;--bad:#d6336c;--warn:#d9a400}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;margin:0}
+main{max-width:920px;margin:0 auto;padding:24px 16px 80px}
+header.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+header.top a.brand{font-weight:800;color:var(--fg);text-decoration:none;letter-spacing:.02em}
+header.top nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+a{color:#93c5fd}
+h1{font-size:24px;margin:8px 0} h2{font-size:15px;margin:28px 0 10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+input,select{width:100%;padding:9px 10px;border-radius:8px;border:1px solid #374151;background:#0f1522;color:var(--fg);font:inherit}
+button,.btn{display:inline-block;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none}
+button.ghost{background:transparent;border:1px solid #374151;color:var(--fg)}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.muted{color:var(--muted)} .err{background:#7f1d1d55;border:1px solid var(--bad);padding:10px 12px;border-radius:8px}
+.info{background:#1e3a8a55;border:1px solid var(--accent);padding:10px 12px;border-radius:8px;word-break:break-all}
+table{width:100%;border-collapse:collapse;font-size:14px} td,th{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left}
+code,pre{background:#0f1522;border:1px solid var(--line);border-radius:6px} code{padding:2px 6px} pre{padding:10px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+.ev{font:13px/1.5 ui-monospace,Consolas,monospace;padding:3px 0;border-bottom:1px dashed var(--line)}
+.ev .st{display:inline-block;min-width:78px;color:var(--muted)} .ev.error .st,.ev.warn .st{color:var(--warn)} .ev.done .st{color:#34d399}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+details summary{cursor:pointer;color:var(--muted)}
+.table-wrap{overflow-x:auto}
+@media (max-width:560px){main{padding:16px}}

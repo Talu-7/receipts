@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% block title %}Check {{ c.id }} · Receipts{% endblock %}{% block body %}
+<h1>Check <code>{{ c.id }}</code></h1>
+<div class="muted">{{ c.arxiv_url }} · {{ c.seeds }} seeds · caps {{ c.gpu_minutes_cap|round(1) }} GPU-min / {{ c.wall_seconds_cap // 60 }} min</div>
+<div class="panel"><span>Status: <b id="status">{{ c.status }}</b></span> <img id="badge" alt="badge" src="/badge/{{ c.id }}.svg" style="vertical-align:middle;margin-left:8px">
+<div id="done" style="{% if not c.receipt %}display:none;{% endif %}margin-top:12px">
+<a class="btn" href="/receipts/{{ c.id }}">View receipt</a> <a href="/receipts/{{ c.id }}.json">JSON</a> · <a href="/receipts/{{ c.id }}/verify">verify signature</a>
+<label for="md">Badge markdown</label><div class="row"><input id="md" readonly value="{{ badge_md }}"><button type="button" id="copy">Copy</button></div></div></div>
+<h2>Progress</h2><div id="events" class="panel"><span class="muted">Waiting for the worker…</span></div>
+<script>
+(function(){
+  var after = 0, box = document.getElementById("events"), first = true, id = {{ c.id|tojson }};
+  function add(e){
+    if(first){ box.innerHTML = ""; first = false; }
+    var d = document.createElement("div"); d.className = "ev " + e.status;
+    d.innerHTML = '<span class="st"></span> <b></b> <span></span>';
+    d.children[0].textContent = new Date(e.t * 1000).toLocaleTimeString();
+    d.children[1].textContent = e.stage + " " + e.status;
+    d.children[2].textContent = e.msg;
+    box.appendChild(d);
+  }
+  function tick(){
+    fetch("/checks/" + id + "?after=" + after, {credentials: "same-origin"}).then(function(r){ return r.json(); }).then(function(j){
+      (j.events || []).forEach(function(e){ add(e); after = Math.max(after, e.seq); });
+      document.getElementById("status").textContent = j.status + (j.verdict ? " · " + j.verdict.replace(/_/g, " ") : "");
+      if(j.status === "done" || j.status === "failed"){
+        document.getElementById("done").style.display = "";
+        document.getElementById("badge").src = "/badge/" + id + ".svg?" + Date.now();
+      } else { setTimeout(tick, 1500); }
+    }).catch(function(){ setTimeout(tick, 4000); });
+  }
+  tick();
+  document.getElementById("copy").onclick = function(){
+    var i = document.getElementById("md"); i.select();
+    try { navigator.clipboard.writeText(i.value); } catch(e) { document.execCommand("copy"); }
+    this.textContent = "Copied";
+  };
+})();
+</script>
+{% endblock %}

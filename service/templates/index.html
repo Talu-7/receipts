@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block body %}
+<h1>Independent reproduction checks for ML papers</h1>
+<p>Paste an arXiv link. Receipts extracts the headline claim, finds the code, re-runs it over several seeds in a
+hardened sandbox and hands back a <b>signed receipt</b> plus a public <b>Receipts-verified</b> badge. Failures are
+reported honestly as <i>inconclusive</i>, never as evidence against a paper.</p>
+<p><a class="btn" href="/login?mode=signup">Start free</a></p>
+<h2>Plans</h2><div class="plans">{% for p in plans.values() %}<div class="panel"><b>{{ p.label }}</b>
+<div style="font-size:22px;margin:6px 0">{% if p.price_usd_month %}${{ p.price_usd_month }}/mo{% else %}Free{% endif %}</div>
+<div class="muted">{{ p.checks_per_month }} checks / month · {{ p.gpu_minutes_per_month|int }} GPU-min / month<br>
+up to {{ p.gpu_minutes_per_check|int }} GPU-min and {{ p.wall_seconds_per_check // 60 }} min per check · {{ p.max_seeds }} seeds</div></div>{% endfor %}</div>
+<h2>Verify any receipt</h2><p class="muted">Public key: <a href="/.well-known/receipts-pubkey">/.well-known/receipts-pubkey</a> ·
+<code>POST /verify</code> with a receipt JSON envelope.</p>
+{% endblock %}
