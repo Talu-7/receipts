@@ -71,7 +71,10 @@ class Pipeline:
 
     # ------------------------------------------------------------------ main entry
     def run(self, user_input: str, seeds: int = 10, runner: str | None = None, tolerance: float | None = None,
-            claim_hint: str = "") -> dict:
+            claim_hint: str = "", claim_override: dict | None = None, repo_hint: str | None = None,
+            task_hint: str = "") -> dict:
+        """claim_override pins the exact claim (no LLM extraction), repo_hint pins the code repository and
+        task_hint is a known reproduction protocol (from an author, or a benchmark such as RECLAIM)."""
         runner_name = runner or self.s.default_runner
         t_start = time.time()
         if runner_name == "docker" and DockerRunner.available() and not DockerRunner.daemon_running():
@@ -93,7 +96,8 @@ class Pipeline:
                 self.emit("discover", "done", "Synthetic case: no repo/errata search needed")
                 self.emit("codegen", "done", "Using the bundled reproduction script")
             else:
-                paper, claim, all_claims, repo, evidence, script, reqs = self._prepare_real(user_input, claim_hint)
+                paper, claim, all_claims, repo, evidence, script, reqs = self._prepare_real(user_input, claim_hint, claim_override,
+                                                                                               repo_hint, task_hint)
                 bundled = False
         except Exception as e:  # always return a receipt, never a stack trace
             self.emit("error", "error", f"{type(e).__name__}: {e}")
@@ -157,7 +161,8 @@ class Pipeline:
         return rec
 
     # ------------------------------------------------------------------ real-paper preparation
-    def _prepare_real(self, user_input: str, claim_hint: str = ""):
+    def _prepare_real(self, user_input: str, claim_hint: str = "", claim_override: dict | None = None,
+                      repo_hint: str | None = None, task_hint: str = ""):
         if not self.llm.available:
             raise RuntimeError("real papers need NEBIUS_API_KEY (Nemotron). Try a bundled case: demo:leakage, demo:reproduces, demo:broken")
         aid = arxiv_src.parse_arxiv_id(user_input)
@@ -168,10 +173,15 @@ class Pipeline:
         self.emit("ingest", "done", f"{meta['title']} ({len(text):,} chars of full text)", title=meta["title"])
         self._partial = {"paper": {"title": meta["title"], "arxiv_id": aid, "url": meta["url"], "abstract": meta["abstract"]}}
 
-        self.emit("claims", "start", "Nemotron Super: extracting claims")
-        cl = claims_mod.extract_claims(self.llm, meta, text, hint=claim_hint)
-        claim = cl["headline"]
-        self.emit("claims", "done", f"Headline: {claim['statement']}", claim=claim, claims=cl["claims"])
+        if claim_override:
+            claim = {"id": "c1", "tractable": True, **claim_override}
+            cl = {"claims": [claim], "headline": claim}
+            self.emit("claims", "done", f"Pinned claim: {claim['statement']}", claim=claim, claims=cl["claims"])
+        else:
+            self.emit("claims", "start", "Nemotron Super: extracting claims")
+            cl = claims_mod.extract_claims(self.llm, meta, text, hint=claim_hint)
+            claim = cl["headline"]
+            self.emit("claims", "done", f"Headline: {claim['statement']}", claim=claim, claims=cl["claims"])
         self._partial.update(claim=claim, claims=cl["claims"])
 
         # Feasibility gate: do not burn jobs on a claim that cannot be re-run within budget.
@@ -189,6 +199,8 @@ class Pipeline:
         # Tavily returns generic pages; keep only results that really report an erratum or a replication.
         disc["evidence"] = filter_evidence(self.llm, meta["title"], disc["evidence"], aid)
         self._partial["evidence"] = disc["evidence"]
+        if repo_hint:  # a known repository beats a search result
+            disc["repo_url"] = repo_hint
         if not disc["repo_url"]:
             raise RuntimeError("no public code repository found for this paper (searched the paper text and the web)")
         ctx = repo_context(disc["repo_url"], claim.get("dataset") or "")
@@ -196,6 +208,7 @@ class Pipeline:
         if notice:
             disc["evidence"].insert(0, notice)
         ctx["data_links"] = [e["url"] for e in disc["evidence"] if e["kind"] == "data"][:4]
+        ctx["task_hint"] = task_hint
         repo = {"url": disc["repo_url"], "commit": ctx.get("commit")}
         self.emit("discover", "done", f"Repo {disc['repo_url']}; {len(disc['evidence'])} evidence links", repo=repo, evidence=disc["evidence"])
 

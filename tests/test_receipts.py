@@ -125,6 +125,35 @@ class TestEvidence(unittest.TestCase):
         self.assertIn("SyntaxError", codegen.lint_script("print('RECEIPTS_RESULT ' + str(1)))", 0.372))
 
 
+class TestReclaim(unittest.TestCase):
+    def test_parse_value(self):
+        from receipts.reclaim import parse_value
+        self.assertEqual(parse_value("77.0 +/- 1.8%"), {"value": 77.0, "spread": 1.8, "unit": "%"})
+        self.assertEqual(parse_value("8.56 kB"), {"value": 8.56, "spread": None, "unit": "kB"})
+        self.assertEqual(parse_value("2.59x")["unit"], "x")
+        self.assertIsNone(parse_value("approximately the same"))
+
+    def test_direction(self):
+        from receipts.reclaim import higher_is_better
+        self.assertFalse(higher_is_better("Validation perplexity (lower is better)"))
+        self.assertFalse(higher_is_better("Peak RAM usage"))
+        self.assertFalse(higher_is_better("optimality gap (%)"))
+        self.assertTrue(higher_is_better("PSNR (dB)"))
+        self.assertTrue(higher_is_better("test accuracy (%)"))
+
+    def test_to_task_pins_claim_repo_and_tolerance(self):
+        from receipts.reclaim import to_task
+        row = {"custom_id": "2502.06684", "tier": "Easy", "central_claim": "c", "agent_task": "run it",
+               "audited_h100_hours": 0.0036,
+               "verified_links": {"code": ["https://github.com/MichaelArbel/EquiTabPFN/blob/main/x.py"]},
+               "match_target": {"config": "cfg", "metric": "Mean accuracy (%)", "value": "77.0 +/- 1.8%",
+                                "scope": "TabZilla", "match_bar_kind": "point_estimate"}}
+        t = to_task(row)
+        self.assertEqual(t["repo"], "https://github.com/MichaelArbel/EquiTabPFN")
+        self.assertEqual((t["claim"]["value"], t["tolerance"]), (77.0, 1.8))
+        self.assertIsNone(to_task({**row, "match_target": {**row["match_target"], "match_bar_kind": "direction"}}))
+
+
 class TestHelpers(unittest.TestCase):
     def test_arxiv_id(self):
         self.assertEqual(parse_arxiv_id("https://arxiv.org/abs/2005.14165v4"), "2005.14165")

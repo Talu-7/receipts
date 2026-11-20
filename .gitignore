@@ -2,3 +2,13 @@
 out/
 __pycache__/
 *.pyc
+
+# private: never commit
+submission/
+SUBMISSION_GUIDE.md
+business/
+.env.*
+!.env.example
+# local evaluation data and runs
+evals/runs/
+evals/data/*.jsonl

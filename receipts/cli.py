@@ -68,6 +68,61 @@ def cmd_verify(a) -> int:
     return 0 if not bad else 1
 
 
+def cmd_eval(a) -> int:
+    """Accuracy evaluation on RECLAIM papers with pinned targets. Resumable: finished papers are skipped."""
+    import os
+    import time
+    from pathlib import Path
+    from . import reclaim
+    from .pipeline import Pipeline
+
+    data = Path(a.data)
+    if not (data / "eval_100.jsonl").exists():
+        print("fetching RECLAIM from Hugging Face ...", flush=True)
+        reclaim.fetch(data)
+    rows = reclaim.load(data / ("dev_split.jsonl" if a.split == "dev" else "eval_100.jsonl"))
+    tasks = reclaim.select(rows, tiers=tuple(a.tier), max_h100_hours=a.max_h100_hours, limit=a.limit,
+                           ids=a.ids.split(",") if a.ids else None)
+    run_dir = Path(a.run_dir or f"evals/runs/{time.strftime('%Y%m%d-%H%M')}-{a.split}")
+    run_dir.mkdir(parents=True, exist_ok=True)
+    res_path = run_dir / "results.jsonl"
+    done = {json.loads(l)["id"] for l in res_path.read_text(encoding="utf-8").splitlines() if l.strip()} if res_path.exists() else set()
+    if a.gpu:
+        os.environ["RECEIPTS_DOCKER_GPUS"] = "1"
+    s = Settings.load()
+    s.out_dir = str(run_dir / "receipts")
+    s.max_parallel = a.parallel
+    print(f"{len(tasks)} papers selected, {len(done)} already done -> {run_dir}", flush=True)
+    for t in tasks:
+        if t["id"] in done:
+            continue
+        print(f"\n=== {t['id']} ({t['tier']}, {t['h100_hours']} H100-h): {t['claim']['metric']} = {t['claim']['value']}{t['claim']['unit']}", flush=True)
+        t0 = time.time()
+        rec = Pipeline(s, emit=lambda e: print(f"  [{e['stage']:<9}] {e['msg'][:160]}", flush=True)).run(
+            t["input"], seeds=a.seeds, runner=a.runner, tolerance=t["tolerance"], claim_override=t["claim"],
+            repo_hint=t["repo"], task_hint=t["task"])
+        v, st = rec["verdict"], rec["verdict"]["stats"]
+        row = {"id": t["id"], "tier": t["tier"], "metric": t["claim"]["metric"], "claimed": t["claim"]["value"],
+               "verdict": v["verdict"], "mean": st.get("mean"), "std": st.get("std"), "n": st.get("n"),
+               "tolerance": v.get("tolerance"), "cause": (rec.get("diagnosis") or {}).get("category"),
+               "explanation": ((rec.get("diagnosis") or {}).get("explanation") or "")[:400],
+               "receipt": rec.get("receipt_id"), "minutes": round((time.time() - t0) / 60, 1)}
+        with res_path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(row) + "\n")
+        print(f"  -> {row['verdict']}  mean={row['mean']}  ({row['minutes']} min)", flush=True)
+    results = [json.loads(l) for l in res_path.read_text(encoding="utf-8").splitlines() if l.strip()] if res_path.exists() else []
+    summary = reclaim.summarize(results)
+    lines = [f"# Receipts on RECLAIM ({a.split}, tiers {', '.join(a.tier)}, <= {a.max_h100_hours} H100-h)", "",
+             *[f"- **{k}**: {v}" for k, v in summary.items()], "",
+             "| paper | metric | claimed | verdict | reproduced mean | cause | min |", "|---|---|---|---|---|---|---|"]
+    lines += [f"| {r['id']} | {r['metric'][:40]} | {r['claimed']} | {r['verdict']} | "
+              f"{'-' if r['mean'] is None else round(r['mean'], 4)} | {r['cause'] or ''} | {r['minutes']} |" for r in results]
+    (run_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (run_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    print("\n" + "\n".join(lines[:9]))
+    return 0
+
+
 def cmd_bench(a) -> int:
     """Run a list of papers with known expected verdicts and report agreement, cost and time."""
     from .pipeline import Pipeline
@@ -213,6 +268,19 @@ def main(argv=None) -> int:
     b.add_argument("--runner", choices=["local", "docker", "nebius"], default=None)
     b.add_argument("--out", default=None)
     b.set_defaults(fn=cmd_bench)
+    ev = sub.add_parser("eval", help="accuracy evaluation on RECLAIM papers with pinned targets (resumable)")
+    ev.add_argument("--data", default="evals/data", help="folder for the RECLAIM jsonl files (fetched if missing)")
+    ev.add_argument("--split", choices=["eval", "dev"], default="eval")
+    ev.add_argument("--tier", nargs="+", default=["Easy"], choices=["Easy", "Medium", "Hard"])
+    ev.add_argument("--max-h100-hours", type=float, default=0.25)
+    ev.add_argument("--ids", default="", help="comma-separated arXiv ids to run instead of a tier selection")
+    ev.add_argument("--limit", type=int, default=None)
+    ev.add_argument("--seeds", type=int, default=3)
+    ev.add_argument("--parallel", type=int, default=1, help="seeds run at once (keep 1 on a single GPU)")
+    ev.add_argument("--gpu", action="store_true", help="give the docker sandbox the GPU")
+    ev.add_argument("--runner", choices=["local", "docker", "nebius"], default="docker")
+    ev.add_argument("--run-dir", default=None, help="resume into an existing run folder")
+    ev.set_defaults(fn=cmd_eval)
     si = sub.add_parser("site", help="build the static replay website (docs/) from out/ receipts")
     si.add_argument("--out", default="out")
     si.add_argument("--dir", default="docs")

@@ -41,7 +41,7 @@ File tree (truncated):
 
 README (truncated):
 {readme}
-{scripts}{repair}"""
+{scripts}{task}{repair}"""
 
 
 def _blocks(text: str) -> tuple[str, list[str]]:
@@ -78,6 +78,8 @@ def generate_script(llm: LLM, meta: dict, claim: dict, repo_url: str, ctx: dict,
         dataset=claim.get("dataset"), where=claim.get("where"), title=meta["title"], repo_url=repo_url,
         commit=ctx.get("commit", "HEAD"), description=ctx.get("description"),
         tree="\n".join(ctx.get("tree", [])[:150]) or "(unavailable)", readme=(ctx.get("readme") or "(unavailable)")[:7000],
+        task=(f"\nKnown reproduction protocol for this claim (follow it; it names the exact configuration to run):\n"
+              f"{ctx['task_hint'][:3000]}\n" if ctx.get("task_hint") else ""),
         scripts="".join(f"\nAuthors' run script {p} (use its entry point and hyperparameters):\n{body}\n"
                         for p, body in (ctx.get("run_scripts") or {}).items())
                 + ("\nDataset sources found by web search (check them; prefer raw file URLs):\n" + "\n".join(ctx["data_links"]) + "\n"
